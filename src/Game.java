@@ -36,7 +36,7 @@ public class Game {
 			return;
 		}
 		if(p.possibleMoves.isEmpty()) {
-			System.out.printf("The %s on %s has no legal moves.", p.getName(), args[0]);
+			System.out.printf("The %s on %s has no legal moves.\n", p.getName(), args[0]);
 			return;
 		}
 		System.out.printf("The %s on %s has these moves:\n", p.getName(), args[0]);

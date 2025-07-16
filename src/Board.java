@@ -46,31 +46,36 @@ public class Board {
 		setPossibleMoves();
 	}
 	
+	void addPawnMoves(ArrayList<Integer> list, int x, int y) {
+		Piece p = pieceOn(x,y);
+		boolean blocked = false;
+		if(p.getColor() == Color.White) {
+			if(y == 7) return;
+			if(pieces[pos(x, y+1)] == null) list.add(pos(x, y+1));
+			else blocked = true;
+			if(!p.hasMoved() && !blocked && pieces[pos(x, y+2)] == null) list.add(pos(x,y+2));
+			if(x > 0 && pieces[pos(x-1, y+1)] != null && pieces[pos(x-1, y+1)].getColor() != p.getColor()) 
+				list.add(pos(x-1, y+1));
+			if(x < 7 && pieces[pos(x+1, y+1)] != null && pieces[pos(x+1, y+1)].getColor() != p.getColor()) 
+				list.add(pos(x+1, y+1));
+		}
+	}
+	
 	private ArrayList<Integer> getPossibleMoves(Piece p, int x, int y) {
 		ArrayList<Integer> moves = new ArrayList<Integer>();
 		switch(p.getType()) {
 		case Pawn:
-			boolean blocked = false;
-			if(p.getColor() == Color.White) {
-				if(y == 7) return moves;
-				if(pieces[pos(x, y+1)] == null) moves.add(pos(x, y+1));
-				else blocked = true;
-				if(!p.hasMoved() && !blocked && pieces[pos(x, y+2)] == null) moves.add(pos(x,y+2));
-				if(x > 0 && pieces[pos(x-1, y+1)] != null && pieces[pos(x-1, y+1)].getColor() != p.getColor()) 
-					moves.add(pos(x-1, y+1));
-				if(x < 7 && pieces[pos(x+1, y+1)] != null && pieces[pos(x+1, y+1)].getColor() != p.getColor()) 
-					moves.add(pos(x+1, y+1));
-			}
+			addPawnMoves(moves, x, y);
 			break;
 		case Bishop:
 			break;
-		case King:
-			break;
 		case Knight:
+			break;
+		case Rook:
 			break;
 		case Queen:
 			break;
-		case Rook:
+		case King:
 			break;
 		default:
 			return null;			
