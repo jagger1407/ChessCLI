@@ -36,15 +36,15 @@ public class Game {
 			return;
 		}
 		if(p.possibleMoves.isEmpty()) {
-			System.out.printf("The %s on %s has no legal moves.", p.getType().toString(), args[0]);
+			System.out.printf("The %s on %s has no legal moves.", p.getName(), args[0]);
 			return;
 		}
-		System.out.printf("The %s on %s has these moves:\n", p.getType().toString(), args[0]);
+		System.out.printf("The %s on %s has these moves:\n", p.getName(), args[0]);
 		for(int i=0;i<p.possibleMoves.size();i++) {
 			int move = p.possibleMoves.get(i);
 			System.out.print(Board.coord(move % 8, move / 8));
 			if(board.pieceOn(move) != null) {
-				System.out.print(" captures " + board.pieceOn(move).getType().toString());
+				System.out.print(" captures " + board.pieceOn(move).getName());
 			}
 			System.out.print("\n");
 		}
