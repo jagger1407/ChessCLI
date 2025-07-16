@@ -46,46 +46,217 @@ public class Board {
 		setPossibleMoves();
 	}
 	
+	// TODO: Add En Passant
+	// Also revamp this holy shit this is bad
 	void addPawnMoves(ArrayList<Integer> list, int x, int y) {
 		Piece p = pieceOn(x,y);
 		boolean blocked = false;
 		if(p.getColor() == Color.White) {
 			if(y == 7) return;
-			if(pieces[pos(x, y+1)] == null) list.add(pos(x, y+1));
+			if(pieces[pos(x, y+1)] == null) {
+				list.add(pos(x, y+1));
+			}
 			else blocked = true;
-			if(!p.hasMoved() && !blocked && pieces[pos(x, y+2)] == null) list.add(pos(x,y+2));
-			if(x > 0 && pieces[pos(x-1, y+1)] != null && pieces[pos(x-1, y+1)].getColor() != p.getColor()) 
-				list.add(pos(x-1, y+1));
-			if(x < 7 && pieces[pos(x+1, y+1)] != null && pieces[pos(x+1, y+1)].getColor() != p.getColor()) 
-				list.add(pos(x+1, y+1));
+			if(!p.hasMoved() && !blocked && pieces[pos(x, y+2)] == null) {
+				if(!list.contains(pos(x,y+2)))
+					list.add(pos(x,y+2));
+			}
+			if(x > 0 && pieces[pos(x-1, y+1)] != null && pieces[pos(x-1, y+1)].getColor() != p.getColor()) {
+				if(!list.contains(pos(x-1,y+1)))
+					list.add(pos(x-1, y+1));
+			}
+				
+			if(x < 7 && pieces[pos(x+1, y+1)] != null && pieces[pos(x+1, y+1)].getColor() != p.getColor()) {
+				if(!list.contains(pos(x+1,y+1)))
+					list.add(pos(x+1, y+1));
+			}
+		}
+		else {
+			if(y == 0) return;
+			if(pieces[pos(x, y-1)] == null) {
+				list.add(pos(x, y-1));
+			}
+			else blocked = true;
+			if(!p.hasMoved() && !blocked && pieces[pos(x, y-2)] == null) {
+				if(!list.contains(pos(x,y-2)))
+					list.add(pos(x,y-2));
+			}
+			if(x > 0 && pieces[pos(x-1, y-1)] != null && pieces[pos(x-1, y-1)].getColor() != p.getColor()) {
+				if(!list.contains(pos(x-1,y-1)))
+					list.add(pos(x-1, y-1));
+			}
+				
+			if(x < 7 && pieces[pos(x+1, y-1)] != null && pieces[pos(x+1, y-1)].getColor() != p.getColor()) {
+				if(!list.contains(pos(x+1,y-1)))
+					list.add(pos(x+1, y-1));
+			}
+		}
+	}
+	// TODO: Clean up a bit (see addRookMoves)
+	void addBishopMoves(ArrayList<Integer> list, int x, int y) {
+		// Up Left
+		for(int i=x-1;i>=0;i--) {
+			int nx = i;
+			int ny = y+x-i;
+			if(ny >= 8) break;
+			Piece p = pieceOn(nx, ny);
+			if(p != null) {
+				if(p.getColor() != pieceOn(x, y).getColor()) {
+					if(!list.contains(pos(nx, ny)))
+						list.add(pos(nx,ny));
+				}
+				break;
+			}
+			if(!list.contains(pos(nx,ny))) {
+				list.add(pos(nx,ny));
+			}
+		}
+		// Up Right
+		for(int i=x+1;i<8;i++) {
+			int nx = i;
+			int ny = y+i-x;
+			if(ny >= 8) break;
+			Piece p = pieceOn(nx, ny);
+			if(p != null) {
+				if(p.getColor() != pieceOn(x, y).getColor()) {
+					if(!list.contains(pos(nx, ny)))
+						list.add(pos(nx,ny));
+				}
+				break;
+			}
+			if(!list.contains(pos(nx,ny))) {
+				list.add(pos(nx,ny));
+			}
+		}
+		// Down Left
+		for(int i=x-1;i>=0;i--) {
+			int nx = i;
+			int ny = y-x+i;
+			if(ny < 0) break;
+			Piece p = pieceOn(nx, ny);
+			if(p != null) {
+				if(p.getColor() != pieceOn(x, y).getColor()) {
+					if(!list.contains(pos(nx, ny)))
+						list.add(pos(nx,ny));
+				}
+				break;
+			}
+			if(!list.contains(pos(nx,ny))) {
+				list.add(pos(nx,ny));
+			}
+		}
+		// Down Right
+		for(int i=x+1;i<8;i++) {
+			int nx = i;
+			int ny = y-i+x;
+			if(ny < 0) break;
+			Piece p = pieceOn(nx, ny);
+			if(p != null) {
+				if(p.getColor() != pieceOn(x, y).getColor()) {
+					if(!list.contains(pos(nx, ny)))
+						list.add(pos(nx,ny));
+				}
+				break;
+			}
+			if(!list.contains(pos(nx,ny))) {
+				list.add(pos(nx,ny));
+			}
+		}
+	}
+	// TODO: Clean up a bit (see addRookMoves)
+	void addKnightMoves(ArrayList<Integer> list, int x, int y) {
+		int nx[] = { x-1, x+1, x-2, x+2 };
+		int ny[] = { y+2, y+2, y+1, y+1, y-2, y-2, y-1, y-1 };
+		for(int i=0;i<8;i++) {
+			if(nx[i%4] >= 0 && nx[i%4] < 8 && ny[i] >= 0 && ny[i] < 8) {
+				if(pieceOn(nx[i%4],ny[i]) == null || pieceOn(nx[i%4],ny[i]).getColor() != pieceOn(x,y).getColor()) {
+					if(!list.contains(pos(nx[i%4],ny[i])))
+						list.add(pos(nx[i%4],ny[i]));
+				}
+			}
+		}
+	}
+	void addRookMoves(ArrayList<Integer> list, int x, int y) {
+		// Left
+		for(int i=x-1;i>=0;i--) {
+			if(pieceOn(i,y) != null && pieceOn(i,y).getColor() == pieceOn(x,y).getColor()) break;
+			if(!list.contains(pos(i,y))) list.add(pos(i,y));
+			if(pieceOn(i,y) != null) break;
+		}
+		// Right
+		for(int i=x+1;i<8;i++) {
+			if(pieceOn(i,y) != null && pieceOn(i,y).getColor() == pieceOn(x,y).getColor()) break;
+			if(!list.contains(pos(i,y))) list.add(pos(i,y));
+			if(pieceOn(i,y) != null) break;
+		}
+		// Up
+		for(int i=y+1;i<8;i++) {
+			if(pieceOn(x,i) != null && pieceOn(x,i).getColor() == pieceOn(x,y).getColor()) break;
+			if(!list.contains(pos(x,i))) list.add(pos(x,i));
+			if(pieceOn(x,i) != null) break;
+		}
+		// Down
+		for(int i=y-1;i>=0;i--) {
+			if(pieceOn(x,i) != null && pieceOn(x,i).getColor() == pieceOn(x,y).getColor()) break;
+			if(!list.contains(pos(x,i))) list.add(pos(x,i));
+			if(pieceOn(x,i) != null) break;
+		}
+	}
+	void addKingMoves(ArrayList<Integer> list, int x, int y) {
+		for(int cy=y-1;cy<=y+1;cy++) {
+			if(cy < 0 || cy >= 8) continue;
+			for(int cx=x-1;cx<=x+1;cx++) {
+				if(cx < 0 || cx >= 8) continue;
+				if(cx == x && cy == y) continue;
+				if(pieceOn(cx,cy) != null && pieceOn(cx,cy).getColor() == pieceOn(x,y).getColor()) continue;
+				
+				if(!list.contains(pos(cx,cy))) list.add(pos(cx,cy));
+			}
 		}
 	}
 	
-	// TODO: finish this
 	public void setPossibleMoves() {
+		ArrayList<Piece> wp = new ArrayList<Piece>();
+		ArrayList<Piece> bp = new ArrayList<Piece>();
+		
 		for(int i=0;i<pieces.length;i++) {
 			if(pieces[i] == null) continue;
+			
+			if(pieces[i].getColor() == Color.White) wp.add(pieces[i]);
+			else bp.add(pieces[i]);
+			
 			int x = i % 8;
 			int y = i / 8;
 			
+			pieces[i].possibleMoves = new ArrayList<Integer>();
 			switch(pieces[i].getType()) {
 			case Pawn:
 				addPawnMoves(pieces[i].possibleMoves, x, y);
 				break;
 			case Bishop:
+				addBishopMoves(pieces[i].possibleMoves, x, y);
 				break;
 			case Knight:
+				addKnightMoves(pieces[i].possibleMoves, x, y);
 				break;
 			case Rook:
+				addRookMoves(pieces[i].possibleMoves, x, y);
 				break;
 			case Queen:
+				addBishopMoves(pieces[i].possibleMoves, x, y);
+				addRookMoves(pieces[i].possibleMoves, x, y);
 				break;
 			case King:
+				addKingMoves(pieces[i].possibleMoves, x, y);
 				break;
 			default:
 				continue;			
 			}
 		}
+		
+		// TODO: After setting all possible moves,
+		// The 2 Kings need their legal moves re-evaluated
+		// To see if one of them is in check.
 	}
 	
 	public String toString() {
