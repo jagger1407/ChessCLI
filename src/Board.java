@@ -61,35 +61,30 @@ public class Board {
 		}
 	}
 	
-	private ArrayList<Integer> getPossibleMoves(Piece p, int x, int y) {
-		ArrayList<Integer> moves = new ArrayList<Integer>();
-		switch(p.getType()) {
-		case Pawn:
-			addPawnMoves(moves, x, y);
-			break;
-		case Bishop:
-			break;
-		case Knight:
-			break;
-		case Rook:
-			break;
-		case Queen:
-			break;
-		case King:
-			break;
-		default:
-			return null;			
-		}
-		return moves;
-	}
-	
 	// TODO: finish this
 	public void setPossibleMoves() {
 		for(int i=0;i<pieces.length;i++) {
 			if(pieces[i] == null) continue;
 			int x = i % 8;
 			int y = i / 8;
-			pieces[i].possibleMoves = getPossibleMoves(pieces[i], x, y);
+			
+			switch(pieces[i].getType()) {
+			case Pawn:
+				addPawnMoves(pieces[i].possibleMoves, x, y);
+				break;
+			case Bishop:
+				break;
+			case Knight:
+				break;
+			case Rook:
+				break;
+			case Queen:
+				break;
+			case King:
+				break;
+			default:
+				continue;			
+			}
 		}
 	}
 	
