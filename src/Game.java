@@ -14,7 +14,13 @@ public class Game {
 		board = new Board();
 		System.out.println("Board initialized.");
 	}
-	
+	void printBoard() {
+		if(!ingame) {
+			System.out.println("No game running.");
+			return;
+		}
+		System.out.println(board.toString());
+	}
 	void exit() {
 		running = false;
 	}
@@ -30,7 +36,7 @@ public class Game {
 			return;
 		}
 		if(p.possibleMoves.isEmpty()) {
-			System.out.printf("The %s on %s has no legal moves.\n", p.getType().toString(), args[0]);
+			System.out.printf("The %s on %s has no legal moves.", p.getType().toString(), args[0]);
 			return;
 		}
 		System.out.printf("The %s on %s has these moves:\n", p.getType().toString(), args[0]);
@@ -50,6 +56,7 @@ public class Game {
 		
 		actions = new ActionHandler[] {
 			new ActionHandler("start", () -> start()),
+			new ActionHandler("board", () -> printBoard()),
 			new ActionHandler("exit", () -> exit()),
 			new ActionHandler("end", () -> exit()),
 			new ActionHandler("quit", () -> exit()),
