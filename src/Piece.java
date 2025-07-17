@@ -11,6 +11,7 @@ public class Piece {
 	  public Piece(PieceType type, Color color) {
 		  this.type = type;
 		  this.color = color;
+		  this.possibleMoves = new ArrayList<Integer>();
 		  setMoved(false);
 	  }
 	  
@@ -26,6 +27,7 @@ public class Piece {
 		  }
 		  
 		  this.type = PieceType.values()[pstr.indexOf(type)];
+		  this.possibleMoves = new ArrayList<Integer>();
 		  setMoved(false);
 	  }
 	  

@@ -50,7 +50,7 @@ public class Board {
 			pieces[pos(i, 1)] = new Piece(PieceType.Pawn, Color.White);
 			pieces[pos(i, 6)] = new Piece(PieceType.Pawn, Color.Black);
 		}
-		setPossibleMoves();
+		fillMoves();
 	}
 	
 	// TODO: Add En Passant
@@ -62,15 +62,15 @@ public class Board {
 			if(pieceOn(x, y+1) == null) list.add(pos(x,y+1));
 			else blocked = true;
 			if(!blocked && !p.hasMoved() && pieceOn(x,y+2) == null) list.add(pos(x,y+2));
-			if(x > 0 && pieceOn(x-1, y+1) != null && pieceOn(x-1, x+1).getColor() != p.getColor()) list.add(pos(x-1, y+1));
-			if(x < 7 && pieceOn(x+1, y+1) != null && pieceOn(x+1, x+1).getColor() != p.getColor()) list.add(pos(x+1, y+1));
+			if(x > 0 && pieceOn(x-1, y+1) != null && pieceOn(x-1, y+1).getColor() != p.getColor()) list.add(pos(x-1, y+1));
+			if(x < 7 && pieceOn(x+1, y+1) != null && pieceOn(x+1, y+1).getColor() != p.getColor()) list.add(pos(x+1, y+1));
 		}
 		else {
 			if(pieceOn(x, y-1) == null) list.add(pos(x,y-1));
 			else blocked = true;
 			if(!blocked && !p.hasMoved() && pieceOn(x,y-2) == null) list.add(pos(x,y-2));
-			if(x > 0 && pieceOn(x-1, y-1) != null && pieceOn(x-1, x-1).getColor() != p.getColor()) list.add(pos(x-1, y-1));
-			if(x < 7 && pieceOn(x+1, y-1) != null && pieceOn(x+1, x-1).getColor() != p.getColor()) list.add(pos(x+1, y-1));
+			if(x > 0 && pieceOn(x-1, y-1) != null && pieceOn(x-1, y-1).getColor() != p.getColor()) list.add(pos(x-1, y-1));
+			if(x < 7 && pieceOn(x+1, y-1) != null && pieceOn(x+1, y-1).getColor() != p.getColor()) list.add(pos(x+1, y-1));
 		}
 	}
 	// TODO: Clean up a bit (see addRookMoves)
@@ -85,7 +85,8 @@ public class Board {
 				if(p.getColor() != pieceOn(x, y).getColor()) {
 					list.add(pos(nx,ny));
 				}
-				break;
+				if(p.getType() == PieceType.King) continue;
+				else break;
 			}
 			list.add(pos(nx,ny));
 		}
@@ -99,7 +100,8 @@ public class Board {
 				if(p.getColor() != pieceOn(x, y).getColor()) {
 					list.add(pos(nx,ny));
 				}
-				break;
+				if(p.getType() == PieceType.King) continue;
+				else break;
 			}
 			list.add(pos(nx,ny));
 			
@@ -114,7 +116,8 @@ public class Board {
 				if(p.getColor() != pieceOn(x, y).getColor()) {
 					list.add(pos(nx,ny));
 				}
-				break;
+				if(p.getType() == PieceType.King) continue;
+				else break;
 			}
 			list.add(pos(nx,ny));
 		}
@@ -128,7 +131,8 @@ public class Board {
 				if(p.getColor() != pieceOn(x, y).getColor()) {
 					list.add(pos(nx,ny));
 				}
-				break;
+				if(p.getType() == PieceType.King) continue;
+				else break;
 			}
 			list.add(pos(nx,ny));
 		}
@@ -149,26 +153,26 @@ public class Board {
 		// Left
 		for(int i=x-1;i>=0;i--) {
 			if(pieceOn(i,y) != null && pieceOn(i,y).getColor() == pieceOn(x,y).getColor()) break;
-			if(!list.contains(pos(i,y))) list.add(pos(i,y));
-			if(pieceOn(i,y) != null) break;
+			list.add(pos(i,y));
+			if(pieceOn(i,y) != null && pieceOn(i,y).getType() != PieceType.King) break;
 		}
 		// Right
 		for(int i=x+1;i<8;i++) {
 			if(pieceOn(i,y) != null && pieceOn(i,y).getColor() == pieceOn(x,y).getColor()) break;
-			if(!list.contains(pos(i,y))) list.add(pos(i,y));
-			if(pieceOn(i,y) != null) break;
+			list.add(pos(i,y));
+			if(pieceOn(i,y) != null && pieceOn(i,y).getType() != PieceType.King) break;
 		}
 		// Up
 		for(int i=y+1;i<8;i++) {
 			if(pieceOn(x,i) != null && pieceOn(x,i).getColor() == pieceOn(x,y).getColor()) break;
-			if(!list.contains(pos(x,i))) list.add(pos(x,i));
-			if(pieceOn(x,i) != null) break;
+			list.add(pos(x,i));
+			if(pieceOn(x,i) != null && pieceOn(x,i).getType() != PieceType.King) break;
 		}
 		// Down
 		for(int i=y-1;i>=0;i--) {
 			if(pieceOn(x,i) != null && pieceOn(x,i).getColor() == pieceOn(x,y).getColor()) break;
-			if(!list.contains(pos(x,i))) list.add(pos(x,i));
-			if(pieceOn(x,i) != null) break;
+			list.add(pos(x,i));
+			if(pieceOn(x,i) != null && pieceOn(x,i).getType() != PieceType.King) break;
 		}
 	}
 	// TODO: Add Castling
@@ -185,69 +189,87 @@ public class Board {
 		}
 	}
 	
-	public void setPossibleMoves() {
-		ArrayList<Piece> wp = new ArrayList<Piece>();
-		ArrayList<Piece> bp = new ArrayList<Piece>();
+	private boolean simulateMove(int src, int dest) {
+		Color c = pieces[src].getColor();
+		int kingPos = -1;
+		Piece pdest = pieces[dest];
 		
-		Piece wk = null;
-		Piece bk = null;
+		ArrayList<Integer> op = new ArrayList<Integer>();
+		
+		boolean check = false;
 		
 		for(int i=0;i<pieces.length;i++) {
-			if(pieces[i] == null) continue;
-			
-			if(pieces[i].getColor() == Color.White) {
-				wp.add(pieces[i]);
-				if(pieces[i].getType() == PieceType.King) wk = pieces[i];
+			if(pieces[i] != null) {
+				if(pieces[i].getColor() != c) op.add(i);
+				if(pieces[i].getColor() == c && pieces[i].getType() == PieceType.King) kingPos = i;
 			}
-			else {
-				bp.add(pieces[i]);
-				if(pieces[i].getType() == PieceType.King) bk = pieces[i];
+		}
+		
+		if(src == pos("d1") && dest == pos("h5")) {
+			System.out.println("test");
+		}
+		
+		pieces[dest] = pieces[src];
+		pieces[src] = null;
+		fillMoves();
+		
+		for(int pos : op) {
+			Piece p = pieces[pos];
+			for(int i=0;i<p.possibleMoves.size();i++) {
+				if(p.possibleMoves.get(i) == kingPos) check = true;
 			}
-			
+		}
+		
+		pieces[src] = pieces[dest];
+		pieces[dest] = pdest;
+		fillMoves();
+		
+		return check;
+	}
+	
+	public void fillMoves() {
+		for(int i=0;i<pieces.length;i++) {
+			Piece p = pieces[i];
+			if(p == null) continue;
+			p.possibleMoves.clear();
 			int x = i % 8;
 			int y = i / 8;
 			
-			pieces[i].possibleMoves = new ArrayList<Integer>();
-			switch(pieces[i].getType()) {
+			switch(p.getType()) {
 			case Pawn:
-				addPawnMoves(pieces[i].possibleMoves, x, y);
+				addPawnMoves(p.possibleMoves, x, y);
 				break;
 			case Bishop:
-				addBishopMoves(pieces[i].possibleMoves, x, y);
+				addBishopMoves(p.possibleMoves, x, y);
 				break;
 			case Knight:
-				addKnightMoves(pieces[i].possibleMoves, x, y);
+				addKnightMoves(p.possibleMoves, x, y);
 				break;
 			case Rook:
-				addRookMoves(pieces[i].possibleMoves, x, y);
+				addRookMoves(p.possibleMoves, x, y);
 				break;
 			case Queen:
-				addBishopMoves(pieces[i].possibleMoves, x, y);
-				addRookMoves(pieces[i].possibleMoves, x, y);
+				addBishopMoves(p.possibleMoves, x, y);
+				addRookMoves(p.possibleMoves, x, y);
 				break;
 			case King:
-				addKingMoves(pieces[i].possibleMoves, x, y);
+				addKingMoves(p.possibleMoves, x, y);
 				break;
 			default:
-				continue;			
+				break;
 			}
 		}
-		
-		// TODO: After setting all possible moves,
-		// The 2 Kings need their legal moves re-evaluated
-		// To see if one of them is in check.
-		for(Piece p : bp) {
-			for(int i=0;i<p.possibleMoves.size();i++) {
-				int move = p.possibleMoves.get(i);
-				int idx = wk.possibleMoves.indexOf(move);
-				if(idx >= 0) wk.possibleMoves.remove(idx);
-			}
-		}
-		for(Piece p : wp) {
-			for(int i=0;i<p.possibleMoves.size();i++) {
-				int move = p.possibleMoves.get(i);
-				int idx = wk.possibleMoves.indexOf(move);
-				if(idx >= 0) wk.possibleMoves.remove(idx);
+	}
+	
+	public void updatePossibleMoves() {
+		fillMoves();
+		for(int i=0;i<pieces.length;i++) {
+			Piece p = pieces[i];
+			if(p == null) continue;
+			for(int move : p.possibleMoves) {
+				if(simulateMove(i, move)) {
+					p.possibleMoves.remove(Integer.valueOf(move));
+				}
 			}
 		}
 	}
@@ -273,6 +295,21 @@ public class Board {
 		}
 		return false;
 	}
+	public boolean inCheckmate(Color color) {
+		boolean checkmate = true;
+		ArrayList<Piece> piecePos = new ArrayList<Piece>();
+		for(int i=0;i<pieces.length;i++) {
+			Piece p = pieces[i];
+			if(p == null) continue;
+			if(p.getColor() == color) piecePos.add(p);
+		}
+		
+		for(Piece p : piecePos) {
+			if(p.possibleMoves.size() > 0) checkmate = false;
+		}
+		
+		return checkmate;
+	}
 	
 	public boolean movePiece(String piecePosition, String destination) {
 		Piece p = pieceOn(piecePosition);
@@ -289,13 +326,13 @@ public class Board {
 		
 		pieces[pos(destination)] = pieces[pos(piecePosition)];
 		pieces[pos(piecePosition)] = null;
-		setPossibleMoves();
+		fillMoves();
 		
 		if(checked && inCheck(p.getColor())) {
 			System.out.println("This move is not legal as it doesn't stop the check.");
 			pieces[pos(piecePosition)] = pieces[pos(destination)];
 			pieces[pos(destination)] = dest;
-			setPossibleMoves();
+			fillMoves();
 			return false;
 		}
 		if(dest != null) {
@@ -319,6 +356,33 @@ public class Board {
 					rank += pieces[y * 8 + x].toString() + " | ";
 				}
 				else rank += "  | ";
+			}
+			board += rank + "\n";
+			board += split + "\n";
+		}
+		board += "   a   b   c   d   e   f   g   h\n";
+		return board;
+	}
+	public String toString(String piecePosition) {
+		if(!validPos(piecePosition)) return toString();
+		if(pieceOn(piecePosition) == null) return toString();
+		
+		Piece p = pieceOn(piecePosition);
+		
+		String split = " +---+---+---+---+---+---+---+---+";
+		String board = "";
+		board += split + "\n";
+		for(int y=7;y>=0;y--) {
+			String rank = String.format("%d|", y+1);
+			for(int x=0;x<8;x++) {
+				// 1|
+				String square = pieceOn(x,y) == null ? " " : pieceOn(x,y).toString();
+				if(p.possibleMoves.contains(pos(x,y))) {
+					rank += String.format(">%s<|", square);
+				}
+				else {
+					rank += String.format(" %s |", square);
+				}
 			}
 			board += rank + "\n";
 			board += split + "\n";

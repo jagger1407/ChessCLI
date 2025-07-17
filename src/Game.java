@@ -15,13 +15,16 @@ public class Game {
 		ingame = true;
 		board = new Board();
 		System.out.println("Board initialized.");
-		turnCounter = 1;
-		turn = Color.values()[turnCounter % Color.values().length];
-		System.out.printf("%s to move.\n", turn.toString());
+		turn = Color.values()[(turnCounter+1) % Color.values().length];
+		System.out.printf("Turn %d. %s to move.\n", turnCounter / 2 + 1, turn.toString());
 	}
 	void printBoard() {
 		if(!ingame) {
 			System.out.println("No game running.");
+			return;
+		}
+		if(args != null && args.length > 0) {
+			showPossibleMoves();
 			return;
 		}
 		System.out.println(board.toString());
@@ -33,6 +36,10 @@ public class Game {
 		if(args == null || args.length < 1 || args[0].isEmpty()) return;
 		if(!ingame) {
 			System.out.println("No game running.");
+			return;
+		}
+		if(!board.validPos(args[0])) {
+			System.out.printf("'%s' is not a valid board position.\n", args[0]);
 			return;
 		}
 		Piece p = board.pieceOn(args[0]);
@@ -53,6 +60,18 @@ public class Game {
 			}
 			System.out.print("\n");
 		}
+	}
+	void showPossibleMoves() {
+		if(args == null || args.length < 1 || args[0].isEmpty()) return;
+		if(!ingame) {
+			System.out.println("No game running.");
+			return;
+		}
+		if(!board.validPos(args[0])) {
+			System.out.printf("'%s' is not a valid board position.\n", args[0]);
+			return;
+		}
+		System.out.println(board.toString(args[0]));
 	}
 	
 	void move() {
@@ -80,14 +99,19 @@ public class Game {
 			System.out.println("This piece is the wrong color.");
 			return;
 		}
+		
 		boolean successful = board.movePiece(args[0], args[1]);
 		if(!successful) return;
+		
 		turnCounter++;
-		turn = Color.values()[turnCounter % Color.values().length];
+		turn = Color.values()[(turnCounter+1) % Color.values().length];
+		if(board.inCheckmate(turn)) {
+			System.out.printf("Checkmate!\nGame ended, %s wins.\n", Color.values()[turnCounter - 1 % Color.values().length].toString());
+		}
 		if(board.inCheck(turn)) {
 			System.out.println("Check!");
 		}
-		System.out.printf("%s to move.\n", turn.toString());
+		System.out.printf("Turn %d. %s to move.\n", turnCounter / 2 + 1, turn.toString());
 	}
 	
 	public Game() {
