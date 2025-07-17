@@ -54,49 +54,23 @@ public class Board {
 	}
 	
 	// TODO: Add En Passant
-	// Also revamp this holy shit this is bad
 	void addPawnMoves(ArrayList<Integer> list, int x, int y) {
 		Piece p = pieceOn(x,y);
 		boolean blocked = false;
+		
 		if(p.getColor() == Color.White) {
-			if(y == 7) return;
-			if(pieces[pos(x, y+1)] == null) {
-				list.add(pos(x, y+1));
-			}
+			if(pieceOn(x, y+1) == null) list.add(pos(x,y+1));
 			else blocked = true;
-			if(!p.hasMoved() && !blocked && pieces[pos(x, y+2)] == null) {
-				if(!list.contains(pos(x,y+2)))
-					list.add(pos(x,y+2));
-			}
-			if(x > 0 && pieces[pos(x-1, y+1)] != null && pieces[pos(x-1, y+1)].getColor() != p.getColor()) {
-				if(!list.contains(pos(x-1,y+1)))
-					list.add(pos(x-1, y+1));
-			}
-				
-			if(x < 7 && pieces[pos(x+1, y+1)] != null && pieces[pos(x+1, y+1)].getColor() != p.getColor()) {
-				if(!list.contains(pos(x+1,y+1)))
-					list.add(pos(x+1, y+1));
-			}
+			if(!blocked && !p.hasMoved() && pieceOn(x,y+2) == null) list.add(pos(x,y+2));
+			if(x > 0 && pieceOn(x-1, y+1) != null && pieceOn(x-1, x+1).getColor() != p.getColor()) list.add(pos(x-1, y+1));
+			if(x < 7 && pieceOn(x+1, y+1) != null && pieceOn(x+1, x+1).getColor() != p.getColor()) list.add(pos(x+1, y+1));
 		}
 		else {
-			if(y == 0) return;
-			if(pieces[pos(x, y-1)] == null) {
-				list.add(pos(x, y-1));
-			}
+			if(pieceOn(x, y-1) == null) list.add(pos(x,y-1));
 			else blocked = true;
-			if(!p.hasMoved() && !blocked && pieces[pos(x, y-2)] == null) {
-				if(!list.contains(pos(x,y-2)))
-					list.add(pos(x,y-2));
-			}
-			if(x > 0 && pieces[pos(x-1, y-1)] != null && pieces[pos(x-1, y-1)].getColor() != p.getColor()) {
-				if(!list.contains(pos(x-1,y-1)))
-					list.add(pos(x-1, y-1));
-			}
-				
-			if(x < 7 && pieces[pos(x+1, y-1)] != null && pieces[pos(x+1, y-1)].getColor() != p.getColor()) {
-				if(!list.contains(pos(x+1,y-1)))
-					list.add(pos(x+1, y-1));
-			}
+			if(!blocked && !p.hasMoved() && pieceOn(x,y-2) == null) list.add(pos(x,y-2));
+			if(x > 0 && pieceOn(x-1, y-1) != null && pieceOn(x-1, x-1).getColor() != p.getColor()) list.add(pos(x-1, y-1));
+			if(x < 7 && pieceOn(x+1, y-1) != null && pieceOn(x+1, x-1).getColor() != p.getColor()) list.add(pos(x+1, y-1));
 		}
 	}
 	// TODO: Clean up a bit (see addRookMoves)
@@ -109,14 +83,11 @@ public class Board {
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
 				if(p.getColor() != pieceOn(x, y).getColor()) {
-					if(!list.contains(pos(nx, ny)))
-						list.add(pos(nx,ny));
+					list.add(pos(nx,ny));
 				}
 				break;
 			}
-			if(!list.contains(pos(nx,ny))) {
-				list.add(pos(nx,ny));
-			}
+			list.add(pos(nx,ny));
 		}
 		// Up Right
 		for(int i=x+1;i<8;i++) {
@@ -126,14 +97,12 @@ public class Board {
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
 				if(p.getColor() != pieceOn(x, y).getColor()) {
-					if(!list.contains(pos(nx, ny)))
-						list.add(pos(nx,ny));
+					list.add(pos(nx,ny));
 				}
 				break;
 			}
-			if(!list.contains(pos(nx,ny))) {
-				list.add(pos(nx,ny));
-			}
+			list.add(pos(nx,ny));
+			
 		}
 		// Down Left
 		for(int i=x-1;i>=0;i--) {
@@ -143,14 +112,11 @@ public class Board {
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
 				if(p.getColor() != pieceOn(x, y).getColor()) {
-					if(!list.contains(pos(nx, ny)))
-						list.add(pos(nx,ny));
+					list.add(pos(nx,ny));
 				}
 				break;
 			}
-			if(!list.contains(pos(nx,ny))) {
-				list.add(pos(nx,ny));
-			}
+			list.add(pos(nx,ny));
 		}
 		// Down Right
 		for(int i=x+1;i<8;i++) {
@@ -160,14 +126,11 @@ public class Board {
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
 				if(p.getColor() != pieceOn(x, y).getColor()) {
-					if(!list.contains(pos(nx, ny)))
-						list.add(pos(nx,ny));
+					list.add(pos(nx,ny));
 				}
 				break;
 			}
-			if(!list.contains(pos(nx,ny))) {
-				list.add(pos(nx,ny));
-			}
+			list.add(pos(nx,ny));
 		}
 	}
 	// TODO: Clean up a bit (see addRookMoves)
@@ -177,8 +140,7 @@ public class Board {
 		for(int i=0;i<8;i++) {
 			if(nx[i%4] >= 0 && nx[i%4] < 8 && ny[i] >= 0 && ny[i] < 8) {
 				if(pieceOn(nx[i%4],ny[i]) == null || pieceOn(nx[i%4],ny[i]).getColor() != pieceOn(x,y).getColor()) {
-					if(!list.contains(pos(nx[i%4],ny[i])))
-						list.add(pos(nx[i%4],ny[i]));
+					list.add(pos(nx[i%4],ny[i]));
 				}
 			}
 		}
