@@ -16,7 +16,14 @@ public class Board {
 		return pos(x, y);
 	}
 	
+	public boolean validPos(String pos) {
+		if(pos.length() != 2) return false;
+		if(!Character.isAlphabetic(pos.charAt(0)) || !Character.isDigit(pos.charAt(1))) return false;
+		return true;
+	}
+	
 	public Piece pieceOn(String position) {
+		if(!validPos(position)) return null;
 		return pieces[pos(position)];
 	}
 	public Piece pieceOn(int x, int y) {
@@ -202,6 +209,7 @@ public class Board {
 			if(pieceOn(x,i) != null) break;
 		}
 	}
+	// TODO: Add Castling
 	void addKingMoves(ArrayList<Integer> list, int x, int y) {
 		for(int cy=y-1;cy<=y+1;cy++) {
 			if(cy < 0 || cy >= 8) continue;
@@ -219,11 +227,20 @@ public class Board {
 		ArrayList<Piece> wp = new ArrayList<Piece>();
 		ArrayList<Piece> bp = new ArrayList<Piece>();
 		
+		Piece wk = null;
+		Piece bk = null;
+		
 		for(int i=0;i<pieces.length;i++) {
 			if(pieces[i] == null) continue;
 			
-			if(pieces[i].getColor() == Color.White) wp.add(pieces[i]);
-			else bp.add(pieces[i]);
+			if(pieces[i].getColor() == Color.White) {
+				wp.add(pieces[i]);
+				if(pieces[i].getType() == PieceType.King) wk = pieces[i];
+			}
+			else {
+				bp.add(pieces[i]);
+				if(pieces[i].getType() == PieceType.King) bk = pieces[i];
+			}
 			
 			int x = i % 8;
 			int y = i / 8;
@@ -257,6 +274,76 @@ public class Board {
 		// TODO: After setting all possible moves,
 		// The 2 Kings need their legal moves re-evaluated
 		// To see if one of them is in check.
+		for(Piece p : bp) {
+			for(int i=0;i<p.possibleMoves.size();i++) {
+				int move = p.possibleMoves.get(i);
+				int idx = wk.possibleMoves.indexOf(move);
+				if(idx >= 0) wk.possibleMoves.remove(idx);
+			}
+		}
+		for(Piece p : wp) {
+			for(int i=0;i<p.possibleMoves.size();i++) {
+				int move = p.possibleMoves.get(i);
+				int idx = wk.possibleMoves.indexOf(move);
+				if(idx >= 0) wk.possibleMoves.remove(idx);
+			}
+		}
+	}
+	
+	public boolean inCheck(Color color) {
+		int kingPos = -1;
+		ArrayList<Piece> opp = new ArrayList<Piece>();
+		
+		for(int i=0;i<pieces.length;i++) {
+			if(pieces[i] == null) continue;
+			if(pieces[i].getColor() != color) {
+				opp.add(pieces[i]);
+				continue;
+			}
+			if(pieces[i].getType() == PieceType.King && pieces[i].getColor() == color) kingPos = i;
+		}
+		
+		for(Piece p : opp) {
+			for(int i=0;i<p.possibleMoves.size();i++) {
+				int move = p.possibleMoves.get(i);
+				if(move == kingPos) return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean movePiece(String piecePosition, String destination) {
+		Piece p = pieceOn(piecePosition);
+		if(p == null) return false;
+		if(!validPos(destination)) return false;
+		
+		boolean checked = inCheck(p.getColor());
+		
+		if(!p.possibleMoves.contains(pos(destination))) {
+			System.out.println("This is not a legal move.");
+			return false;
+		}
+		Piece dest = pieceOn(destination);
+		
+		pieces[pos(destination)] = pieces[pos(piecePosition)];
+		pieces[pos(piecePosition)] = null;
+		setPossibleMoves();
+		
+		if(checked && inCheck(p.getColor())) {
+			System.out.println("This move is not legal as it doesn't stop the check.");
+			pieces[pos(piecePosition)] = pieces[pos(destination)];
+			pieces[pos(destination)] = dest;
+			setPossibleMoves();
+			return false;
+		}
+		if(dest != null) {
+			System.out.printf("%s's %s captures %s's %s on %s!\n", p.getColor().toString(), p.getName(), dest.getColor().toString(), dest.getName(), destination);
+		}
+		else {
+			System.out.printf("%s's %s moves to %s.\n", p.getColor().toString(), p.getName(), destination);
+		}
+		p.setMoved(true);
+		return true;
 	}
 	
 	public String toString() {

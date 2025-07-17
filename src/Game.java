@@ -5,6 +5,8 @@ public class Game {
 	Board board;
 	boolean running;
 	boolean ingame;
+	Color turn;
+	int turnCounter = 0;
 	ActionHandler[] actions;
 	
 	String[] args = null;
@@ -13,6 +15,9 @@ public class Game {
 		ingame = true;
 		board = new Board();
 		System.out.println("Board initialized.");
+		turnCounter = 1;
+		turn = Color.values()[turnCounter % Color.values().length];
+		System.out.printf("%s to move.\n", turn.toString());
 	}
 	void printBoard() {
 		if(!ingame) {
@@ -50,6 +55,41 @@ public class Game {
 		}
 	}
 	
+	void move() {
+		if(args == null || args.length < 1 || args[0].isEmpty() || args[1].isEmpty())  {
+			System.out.println("No arguments given.");
+			return;
+		}
+		if(!ingame) {
+			System.out.println("No game running.");
+			return;
+		}
+		if(!board.validPos(args[0])) {
+			System.out.printf("'%s' is not a valid board position.\n", args[0]);
+			return;
+		}
+		if(!board.validPos(args[1])) {
+			System.out.printf("'%s' is not a valid board position.\n", args[1]);
+			return;
+		}
+		if(board.pieceOn(args[0]) == null) {
+			System.out.println("There is nothing on this square.");
+			return;
+		}
+		if(board.pieceOn(args[0]).getColor() != turn) {
+			System.out.println("This piece is the wrong color.");
+			return;
+		}
+		boolean successful = board.movePiece(args[0], args[1]);
+		if(!successful) return;
+		turnCounter++;
+		turn = Color.values()[turnCounter % Color.values().length];
+		if(board.inCheck(turn)) {
+			System.out.println("Check!");
+		}
+		System.out.printf("%s to move.\n", turn.toString());
+	}
+	
 	public Game() {
 		running = true;
 		ingame = false;
@@ -61,7 +101,8 @@ public class Game {
 			new ActionHandler("end", () -> exit()),
 			new ActionHandler("quit", () -> exit()),
 			new ActionHandler("stop", () -> exit()),
-			new ActionHandler("moves", () -> printMoves())
+			new ActionHandler("moves", () -> printMoves()),
+			new ActionHandler("move", () -> move()),
 		};
 	}
 	

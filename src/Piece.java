@@ -49,6 +49,11 @@ public class Piece {
 		  return type.toString();
 	  }
 	  
+	  public void promote(PieceType newType) {
+		  if(type != PieceType.Pawn || newType == PieceType.Pawn || newType == PieceType.King) return;
+		  this.type = newType;
+	  }
+	  
 	  public String toString() {
 		  String letters = "pbnrqk";
 		  String out = "" + letters.charAt(type.ordinal());
