@@ -4,7 +4,7 @@ Das soll mal ein Schach bot werden gegen den man spielen kann. Der soll aber CLI
 ### Momentane Features:
 - Schachbrett anzeigen
 - Schach & Schachmatt
-- Rochade (Castlign)
+- Rochade (Castling)
 - Brettposition laden via FEN-Notation
 
 ### Todo Features:
