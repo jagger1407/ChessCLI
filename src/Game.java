@@ -167,6 +167,16 @@ public class Game {
 		args = null;
 	}
 	
+	void resign() {
+		if(!ingame) {
+			System.out.println("No game running.");
+			return;
+		}
+		Color winner = turn;
+		Color loser = Color.values()[(turnCounter) % Color.values().length];
+		System.out.printf("%s resigns. %s wins!\n", winner, loser);
+	}
+	
 	public Game() {
 		running = true;
 		ingame = false;
@@ -181,6 +191,7 @@ public class Game {
 			new ActionHandler("moves", () -> printMoves()),
 			new ActionHandler("move", () -> move()),
 			new ActionHandler("load", () -> loadBoard()),
+			new ActionHandler("resign", () -> resign()),
 		};
 	}
 	
