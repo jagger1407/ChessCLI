@@ -106,7 +106,9 @@ public class Game {
 		turnCounter++;
 		turn = Color.values()[(turnCounter+1) % Color.values().length];
 		if(board.inCheckmate(turn)) {
-			System.out.printf("Checkmate!\nGame ended, %s wins.\n", Color.values()[turnCounter - 1 % Color.values().length].toString());
+			System.out.printf("Checkmate!\nGame ended, %s wins.\n", Color.values()[(turnCounter) % Color.values().length].toString());
+			ingame = false;
+			return;
 		}
 		if(board.inCheck(turn)) {
 			System.out.println("Check!");

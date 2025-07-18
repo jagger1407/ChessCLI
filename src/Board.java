@@ -198,15 +198,19 @@ public class Board {
 		
 		boolean check = false;
 		
+		ArrayList<Integer> positions = new ArrayList<Integer>();
 		for(int i=0;i<pieces.length;i++) {
 			if(pieces[i] != null) {
+				positions.add(i);
 				if(pieces[i].getColor() != c) op.add(i);
 				if(pieces[i].getColor() == c && pieces[i].getType() == PieceType.King) kingPos = i;
 			}
 		}
 		
-		if(src == pos("d1") && dest == pos("h5")) {
-			System.out.println("test");
+		Object state[] = new Object[positions.size()];
+		
+		for(int i=0;i<state.length;i++) {
+			state[i] = pieces[positions.get(i)].possibleMoves.clone();
 		}
 		
 		pieces[dest] = pieces[src];
@@ -222,7 +226,10 @@ public class Board {
 		
 		pieces[src] = pieces[dest];
 		pieces[dest] = pdest;
-		fillMoves();
+		
+		for(int i=0;i<positions.size();i++) {
+			pieces[positions.get(i)].possibleMoves = (ArrayList<Integer>)state[i];
+		}
 		
 		return check;
 	}
@@ -266,7 +273,9 @@ public class Board {
 		for(int i=0;i<pieces.length;i++) {
 			Piece p = pieces[i];
 			if(p == null) continue;
-			for(int move : p.possibleMoves) {
+			ArrayList<Integer> moves = (ArrayList<Integer>)p.possibleMoves.clone();
+			for(int m=0;m<moves.size();m++) {
+				int move = moves.get(m);
 				if(simulateMove(i, move)) {
 					p.possibleMoves.remove(Integer.valueOf(move));
 				}
@@ -326,13 +335,13 @@ public class Board {
 		
 		pieces[pos(destination)] = pieces[pos(piecePosition)];
 		pieces[pos(piecePosition)] = null;
-		fillMoves();
+		updatePossibleMoves();
 		
 		if(checked && inCheck(p.getColor())) {
 			System.out.println("This move is not legal as it doesn't stop the check.");
 			pieces[pos(piecePosition)] = pieces[pos(destination)];
 			pieces[pos(destination)] = dest;
-			fillMoves();
+			updatePossibleMoves();
 			return false;
 		}
 		if(dest != null) {
