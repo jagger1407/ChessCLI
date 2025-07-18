@@ -51,9 +51,10 @@ public class Piece {
 		  return type.toString();
 	  }
 	  
-	  public void promote(PieceType newType) {
-		  if(type != PieceType.Pawn || newType == PieceType.Pawn || newType == PieceType.King) return;
+	  public boolean promote(PieceType newType) {
+		  if(type != PieceType.Pawn || newType == PieceType.Pawn || newType == PieceType.King) return false;
 		  this.type = newType;
+		  return true;
 	  }
 	  
 	  public String toString() {

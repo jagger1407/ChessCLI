@@ -8,10 +8,11 @@ public class Board {
 	}
 	
 	private int pos(String boardPosition) {
+		if(!validPos(boardPosition)) return -1;
 		String letters = "abcdefgh";
 		char file = boardPosition.charAt(0);
 		int x = letters.indexOf(file);
-		int y = Integer.valueOf(boardPosition.substring(1)) - 1;
+		int y = (boardPosition.charAt(1) - '1');
 		
 		return pos(x, y);
 	}
@@ -20,8 +21,8 @@ public class Board {
 		if(pos.length() != 2) return false;
 		pos = pos.toLowerCase();
 		if(!Character.isAlphabetic(pos.charAt(0)) || !Character.isDigit(pos.charAt(1))) return false;
-		if((int)pos.charAt(0) < (int)'a' || (int)pos.charAt(0) > 'h') return false;
-		if((int)pos.charAt(1) < '1' || (int)pos.charAt(1) > '8') return false;
+		if(pos.charAt(0) < 'a' || pos.charAt(0) > 'h') return false;
+		if(pos.charAt(1) < '1' || pos.charAt(1) > '8') return false;
 		return true;
 	}
 	
@@ -60,6 +61,8 @@ public class Board {
 	void addPawnMoves(ArrayList<Integer> list, int x, int y) {
 		Piece p = pieceOn(x,y);
 		boolean blocked = false;
+		
+		if(y >= 7 || y <= 0) return;
 		
 		if(p.getColor() == Color.White) {
 			if(pieceOn(x, y+1) == null) list.add(pos(x,y+1));

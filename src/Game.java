@@ -5,6 +5,8 @@ public class Game {
 	Board board;
 	boolean running;
 	boolean ingame;
+	boolean promoting;
+	Piece promotingPiece;
 	Color turn;
 	int turnCounter;
 	ActionHandler[] actions;
@@ -13,6 +15,8 @@ public class Game {
 	
 	void start() {
 		ingame = true;
+		promoting = false;
+		promotingPiece = null;
 		board = new Board();
 		System.out.println("Board initialized.");
 		turnCounter = 0;
@@ -104,17 +108,38 @@ public class Game {
 		boolean successful = board.movePiece(args[0], args[1]);
 		if(!successful) return;
 		
-		turnCounter++;
-		turn = Color.values()[(turnCounter+1) % Color.values().length];
-		if(board.inCheckmate(turn)) {
-			System.out.printf("Checkmate!\nGame ended, %s wins.\n", Color.values()[(turnCounter) % Color.values().length].toString());
-			ingame = false;
+		Piece p = board.pieceOn(args[1]);
+		if(p.getType() == PieceType.Pawn && (args[1].charAt(1) == '1' || args[1].charAt(1) == '8')) {
+			System.out.println("What piece do you want to promote to?");
+			promotingPiece = p;
+			promoting = true;
 			return;
 		}
-		if(board.inCheck(turn)) {
-			System.out.println("Check!");
+		
+		nextTurn();
+	}
+	
+	void promote() {
+		PieceType[] types = PieceType.values();
+		for(int i=0;i<types.length;i++) {
+			if(args[0].equals("king")) {
+				System.out.println("You can't make a second king. Are you stupid?");
+				return;
+			}
+			if(args[0].equals("pawn")) {
+				System.out.println("You can't stay a pawn this is a PROMOTION. Are you stupid?");
+				return;
+			}
+			if(args[0].equals(types[i].toString().toLowerCase())) {
+				promotingPiece.promote(types[i]);
+				promoting = false;
+				args = null;
+				board.updatePossibleMoves();
+				nextTurn();
+				return;
+			}
 		}
-		System.out.printf("Turn %d. %s to move.\n", turnCounter / 2 + 1, turn.toString());
+		System.out.printf("There is no piece called '%s'.\n", args[0]);
 	}
 	
 	public Game() {
@@ -133,6 +158,20 @@ public class Game {
 		};
 	}
 	
+	void nextTurn() {
+		turnCounter++;
+		turn = Color.values()[(turnCounter+1) % Color.values().length];
+		if(board.inCheckmate(turn)) {
+			System.out.printf("Checkmate!\nGame ended, %s wins.\n", Color.values()[(turnCounter) % Color.values().length].toString());
+			ingame = false;
+			return;
+		}
+		if(board.inCheck(turn)) {
+			System.out.println("Check!");
+		}
+		System.out.printf("Turn %d. %s to move.\n", turnCounter / 2 + 1, turn.toString());
+	}
+	
 	public static void main(String[] args) {
 		Game g = new Game();
 		Scanner input = new Scanner(System.in);
@@ -147,6 +186,11 @@ public class Game {
 				g.args = new String[argc];
 				System.arraycopy(inStr.split(" "), 1, g.args, 0, argc);
 				inStr = inStr.split(" ")[0];
+			}
+			if(g.promoting) {
+				g.args = new String[] { inStr.toLowerCase() };
+				g.promote();
+				continue;
 			}
 			boolean found = false;
 			for(int i=0;i<g.actions.length;i++) {
