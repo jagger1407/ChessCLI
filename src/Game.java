@@ -142,6 +142,31 @@ public class Game {
 		System.out.printf("There is no piece called '%s'.\n", args[0]);
 	}
 	
+	void loadBoard() {
+		if(args == null || args.length < 1 || args[0].isEmpty()) return;
+		
+		if(args.length != 6) {
+			System.out.println("This is not a valid FEN-notation.");
+			return;
+		}
+		if(args[1].equals("w")) {
+			if(args[5].equals("1")) turnCounter = -1;
+			else turnCounter = (args[5].charAt(0) - '0') * 2 - 3;
+		}
+		else if(args[1].equals("b")) {
+			turnCounter = (args[5].charAt(0) - '0') * 2 - 2;
+		}
+		else {
+			System.out.println("(w)hite or (b)lack, those are the only 2 sides.");
+			return;
+		}
+		ingame = true;
+		board = new Board(String.join(" ", args));
+		System.out.println("Board position loaded.");
+		nextTurn();
+		args = null;
+	}
+	
 	public Game() {
 		running = true;
 		ingame = false;
@@ -155,6 +180,7 @@ public class Game {
 			new ActionHandler("stop", () -> exit()),
 			new ActionHandler("moves", () -> printMoves()),
 			new ActionHandler("move", () -> move()),
+			new ActionHandler("load", () -> loadBoard()),
 		};
 	}
 	

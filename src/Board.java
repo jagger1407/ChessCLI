@@ -57,6 +57,43 @@ public class Board {
 		fillMoves();
 	}
 	
+	public Board(String fenPosition) {
+		pieces = new Piece[64];
+		String[] fenElements = fenPosition.split(" ");
+		if(fenElements.length != 6) {
+			return;
+		}
+		String[] ranks = fenElements[0].split("/");
+		
+		String pstr = "pbnrqk";
+		for(int y=7;y>=0;y--) {
+			String rank = ranks[7-y];
+			int x = 0;
+			for(int i=0;i<rank.length();i++) {
+				char c = rank.charAt(i);
+				if(pstr.indexOf(Character.toLowerCase(c)) != -1) {
+					pieces[pos(x,y)] = new Piece(c);
+					x++;
+				}
+				else if(c >= '1' && c <= '8') {
+					x += (c - '0');
+				}
+			}
+		}
+		String castles = fenElements[2];
+		if(castles.equals("-")) {
+			for(int i=0;i<pieces.length;i++) {
+				if(pieces[i].getType() == PieceType.Rook) pieces[i].setMoved(true);
+			}
+		}
+		if(!castles.contains("K")) pieces[pos(7,0)].setMoved(true);
+		if(!castles.contains("k")) pieces[pos(7,7)].setMoved(true);
+		if(!castles.contains("Q")) pieces[pos(0,0)].setMoved(true);
+		if(!castles.contains("q")) pieces[pos(0,7)].setMoved(true);
+		
+		fillMoves();
+	}
+	
 	// TODO: Add En Passant
 	void addPawnMoves(ArrayList<Integer> list, int x, int y) {
 		Piece p = pieceOn(x,y);
