@@ -18,7 +18,10 @@ public class Board {
 	
 	public boolean validPos(String pos) {
 		if(pos.length() != 2) return false;
+		pos = pos.toLowerCase();
 		if(!Character.isAlphabetic(pos.charAt(0)) || !Character.isDigit(pos.charAt(1))) return false;
+		if((int)pos.charAt(0) < (int)'a' || (int)pos.charAt(0) > 'h') return false;
+		if((int)pos.charAt(1) < '1' || (int)pos.charAt(1) > '8') return false;
 		return true;
 	}
 	
