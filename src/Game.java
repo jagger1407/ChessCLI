@@ -6,7 +6,7 @@ public class Game {
 	boolean running;
 	boolean ingame;
 	Color turn;
-	int turnCounter = 0;
+	int turnCounter;
 	ActionHandler[] actions;
 	
 	String[] args = null;
@@ -15,6 +15,7 @@ public class Game {
 		ingame = true;
 		board = new Board();
 		System.out.println("Board initialized.");
+		turnCounter = 0;
 		turn = Color.values()[(turnCounter+1) % Color.values().length];
 		System.out.printf("Turn %d. %s to move.\n", turnCounter / 2 + 1, turn.toString());
 	}

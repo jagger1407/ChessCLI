@@ -175,7 +175,6 @@ public class Board {
 			if(pieceOn(x,i) != null && pieceOn(x,i).getType() != PieceType.King) break;
 		}
 	}
-	// TODO: Add Castling
 	void addKingMoves(ArrayList<Integer> list, int x, int y) {
 		for(int cy=y-1;cy<=y+1;cy++) {
 			if(cy < 0 || cy >= 8) continue;
@@ -187,36 +186,73 @@ public class Board {
 				if(!list.contains(pos(cx,cy))) list.add(pos(cx,cy));
 			}
 		}
+		if(pieceOn(x,y).hasMoved()) return;
+		// Kingside Castling
+		if(pieceOn(7,y) != null && !pieceOn(7,y).hasMoved()) {
+			if(pieceOn(6,y) == null && pieceOn(5,y) == null) list.add(pos(6,y));
+		}
+		// Queenside Castling
+		if(pieceOn(0,y) != null && !pieceOn(0,y).hasMoved()) {
+			if(pieceOn(3,y) == null && pieceOn(2,y) == null && pieceOn(1,y) == null) list.add(pos(2,y));
+		}
 	}
 	
 	private boolean simulateMove(int src, int dest) {
+		// I get the color of the piece
 		Color c = pieces[src].getColor();
+		// Since this function returns whether this move ends in check,
+		boolean check = false;
+		// we need to know the position of our king.
 		int kingPos = -1;
+		// For undoing the move later, we need to know what was on the destination square.
 		Piece pdest = pieces[dest];
 		
+		// We need to get all the opponent's pieces to check their next possible moves
 		ArrayList<Integer> op = new ArrayList<Integer>();
 		
-		boolean check = false;
-		
+		// This one is for saving where each piece on the board CURRENTLY is.
 		ArrayList<Integer> positions = new ArrayList<Integer>();
+		// Now, we loop through the squares of the board
 		for(int i=0;i<pieces.length;i++) {
 			if(pieces[i] != null) {
+				// If this square has a piece, save it and save it to op if it's an opponent piece
 				positions.add(i);
 				if(pieces[i].getColor() != c) op.add(i);
+				// Getting our king position with this one
 				if(pieces[i].getColor() == c && pieces[i].getType() == PieceType.King) kingPos = i;
 			}
 		}
-		
+		// Now this one stores the state of each piece on the board
 		Object state[] = new Object[positions.size()];
-		
 		for(int i=0;i<state.length;i++) {
 			state[i] = pieces[positions.get(i)].possibleMoves.clone();
 		}
 		
+		// This is the move we're simulating, putting the piece from src to dest
 		pieces[dest] = pieces[src];
 		pieces[src] = null;
+		//Castling
+		int difference = dest - src;
+		int rook = -1;
+		int y = dest / 8;
+		if(pieces[dest].getType() == PieceType.King && (difference == 2 || difference == -2)) {
+			// Kingside
+			if(difference > 0) {
+				rook = pos(7, y);
+				pieces[pos(5,y)] = pieces[rook];
+				pieces[rook] = null;
+			}
+			// Queenside
+			else {
+				rook = pos(0, y);
+				pieces[pos(3,y)] = pieces[rook];
+				pieces[rook] = null;
+			}
+		}
+		// fillMoves() just fills each piece's legal move list with their moves disregarding checks
 		fillMoves();
 		
+		// Here we see if the move we just made ends in check for us. If so, it's an illegal move.
 		for(int pos : op) {
 			Piece p = pieces[pos];
 			for(int i=0;i<p.possibleMoves.size();i++) {
@@ -224,9 +260,21 @@ public class Board {
 			}
 		}
 		
+		// Since this is a simulation, we gotta undo the move.
 		pieces[src] = pieces[dest];
 		pieces[dest] = pdest;
-		
+		// Castling
+		// Kingside
+		if(rook == pos(7, y)) {
+			pieces[rook] = pieces[pos(5, y)];
+			pieces[pos(5,y)] = null;
+		}
+		// Queenside
+		else if(rook == pos(0, y)) {
+			pieces[rook] = pieces[pos(5, y)];
+			pieces[pos(3,y)] = null;
+		}
+		// This loop resets the state of each piece, INCLUDING checks for ending in check.
 		for(int i=0;i<positions.size();i++) {
 			pieces[positions.get(i)].possibleMoves = (ArrayList<Integer>)state[i];
 		}
@@ -269,10 +317,13 @@ public class Board {
 	}
 	
 	public void updatePossibleMoves() {
+		// We fill the move of each piece disregarding checks
 		fillMoves();
 		for(int i=0;i<pieces.length;i++) {
 			Piece p = pieces[i];
 			if(p == null) continue;
+			// We clone the ArrayList because we're modifying it
+			// by removing the moves that would end with you being in check.
 			ArrayList<Integer> moves = (ArrayList<Integer>)p.possibleMoves.clone();
 			for(int m=0;m<moves.size();m++) {
 				int move = moves.get(m);
@@ -280,6 +331,7 @@ public class Board {
 					p.possibleMoves.remove(Integer.valueOf(move));
 				}
 			}
+			// After all of this, it should be ensured that all moves left are legal.
 		}
 	}
 	
@@ -335,15 +387,30 @@ public class Board {
 		
 		pieces[pos(destination)] = pieces[pos(piecePosition)];
 		pieces[pos(piecePosition)] = null;
-		updatePossibleMoves();
-		
-		if(checked && inCheck(p.getColor())) {
-			System.out.println("This move is not legal as it doesn't stop the check.");
-			pieces[pos(piecePosition)] = pieces[pos(destination)];
-			pieces[pos(destination)] = dest;
+		// Castling
+		int difference = pos(destination) - pos(piecePosition);
+		if(p.getType() == PieceType.King && (difference == 2 || difference == -2)) {
+			int y = pos(destination) / 8;
+			// Kingside
+			if(difference > 0) {
+				pieces[pos(5,y)] = pieces[pos(7,y)];
+				pieces[pos(5,y)].setMoved(true);
+				pieces[pos(7,y)] = null;
+				System.out.printf("%s castles Kingside.\n", p.getColor().toString());
+			}
+			// Queenside
+			else {
+				pieces[pos(3,y)] = pieces[pos(0,y)];
+				pieces[pos(3,y)].setMoved(true);
+				pieces[pos(0,y)] = null;
+				System.out.printf("%s castles Queenside.\n", p.getColor().toString());
+			}
 			updatePossibleMoves();
-			return false;
+			p.setMoved(true);
+			return true;
 		}
+		
+		updatePossibleMoves();
 		if(dest != null) {
 			System.out.printf("%s's %s captures %s's %s on %s!\n", p.getColor().toString(), p.getName(), dest.getColor().toString(), dest.getName(), destination);
 		}
