@@ -14,6 +14,10 @@ public class Game {
 	String[] args = null;
 	
 	void start() {
+		if(ingame) {
+			System.out.println("A game is currently running. Resign if you want to start a new game.");
+			return;
+		}
 		ingame = true;
 		promoting = false;
 		promotingPiece = null;
