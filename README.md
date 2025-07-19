@@ -6,9 +6,9 @@ Das soll mal ein Schach bot werden gegen den man spielen kann. Der soll aber CLI
 - Schach & Schachmatt
 - Rochade (Castling)
 - Brettposition laden via FEN-Notation
+- Brettposition FEN Export
 
 ### Todo Features:
 - Stalemate
 - En Passant
-- Brettposition export
 - Schachbot als gegner (Der Hauptgrund warum ich das hier mache lmao)
