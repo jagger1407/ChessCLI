@@ -11,6 +11,8 @@ public class Game {
 	int turnCounter;
 	ActionHandler[] actions;
 	
+	MoveDecoder dc = null;
+	
 	String[] args = null;
 	
 	void start() {
@@ -22,6 +24,7 @@ public class Game {
 		promoting = false;
 		promotingPiece = null;
 		board = new Board();
+		dc = new MoveDecoder(board);
 		System.out.println("Board initialized.");
 		turnCounter = 0;
 		turn = Color.values()[(turnCounter+1) % Color.values().length];
@@ -166,6 +169,7 @@ public class Game {
 		}
 		ingame = true;
 		board = new Board(String.join(" ", args));
+		dc = new MoveDecoder(board);
 		System.out.println("Board position loaded.");
 		nextTurn();
 	}
@@ -257,6 +261,13 @@ public class Game {
 				}
 			}
 			if(!found) {
+				if(g.ingame) {
+					String[] move = g.dc.decode(g.turn, inStr);
+					if(move == null) continue;
+					g.args = move;
+					g.move();
+					continue;
+				}
 				System.out.println("Unknown action '" + inStr + "'.");
 			}
 		}
