@@ -144,7 +144,7 @@ public class Game {
 	
 	void loadBoard() {
 		if(args == null || args.length < 1 || args[0].isEmpty()) return;
-		
+		 
 		if(args.length != 6) {
 			System.out.println("This is not a valid FEN-notation.");
 			return;
@@ -167,6 +167,15 @@ public class Game {
 		args = null;
 	}
 	
+	void export() {
+		if(board == null) {
+			System.out.println("No game has been played yet.");
+			return;
+		}
+		System.out.println("The current FEN-Position of the board is:");
+		System.out.println(board.getPosition(turn, turnCounter));
+	}
+	
 	void resign() {
 		if(!ingame) {
 			System.out.println("No game running.");
@@ -175,6 +184,7 @@ public class Game {
 		Color winner = turn;
 		Color loser = Color.values()[(turnCounter) % Color.values().length];
 		System.out.printf("%s resigns. %s wins!\n", winner, loser);
+		ingame = false;
 	}
 	
 	public Game() {
@@ -192,6 +202,7 @@ public class Game {
 			new ActionHandler("move", () -> move()),
 			new ActionHandler("load", () -> loadBoard()),
 			new ActionHandler("resign", () -> resign()),
+			new ActionHandler("export", () -> export()),
 		};
 	}
 	

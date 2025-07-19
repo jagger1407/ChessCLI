@@ -464,6 +464,72 @@ public class Board {
 		return true;
 	}
 	
+	public String getPosition(Color turn, int turnCounter) {
+		String out = "";
+		
+		int frees = 0;
+		for(int y = 7;y >= 0; y--) {
+			for(int x=0;x<8;x++) {
+				Piece p = pieces[pos(x,y)];
+				if(p != null) {
+					if(frees != 0) {
+						out += frees;
+						frees = 0;
+					}
+					out += p.toString();
+					continue;
+				}
+				frees++;
+			}
+			if(frees != 0) {
+				out += frees;
+				frees = 0;
+			}
+			if(y != 0) out += "/";
+		}
+		
+		if(turn == Color.White) out += " w ";
+		else out += " b ";
+		
+		boolean[] castling = new boolean[] { true, true, true, true };
+		String crights = "KQkq";
+		int[] crooks = new int[] { pos(7,0), pos(0,0), pos(7,7), pos(0,7) };
+		
+		Piece wk = pieces[pos(4,0)];
+		Piece bk = pieces[pos(4,7)];
+		
+		if(wk == null || wk.getType() != PieceType.King || wk.getColor() != Color.White || wk.hasMoved()) {
+			castling[0] = false;
+			castling[1] = false;
+		}
+		if(bk == null || bk.getType() != PieceType.King || bk.getColor() != Color.Black || bk.hasMoved()) {
+			castling[2] = false;
+			castling[3] = false;
+		}
+		for(int i=0;i<4;i++) {
+			Color c = i > 1 ? Color.Black : Color.White;
+			Piece p = pieces[crooks[i]];
+			if(p == null || p.getType() != PieceType.Rook || p.getColor() != c || p.hasMoved()) castling[i] = false;
+			
+			if(castling[i]) {
+				out += crights.charAt(i);
+			}
+		}
+		if(!castling[0] && !castling[1] && !castling[2] && !castling[3]) out += "-";
+		
+		// TODO: Add En Passant
+		// This is just a placeholder
+		out += " - ";
+		
+		// TODO: Add 50-move draw
+		// This is just a placeholder
+		out += "0 ";
+		
+		out += Integer.toString(turnCounter / 2 + 1);
+		
+		return out;
+	}
+	
 	public String toString() {
 		String split = " +---+---+---+---+---+---+---+---+";
 		String board = "";
