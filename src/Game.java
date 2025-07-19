@@ -34,6 +34,7 @@ public class Game {
 		}
 		if(args != null && args.length > 0) {
 			showPossibleMoves();
+			args = null;
 			return;
 		}
 		System.out.println(board.toString());
@@ -45,19 +46,23 @@ public class Game {
 		if(args == null || args.length < 1 || args[0].isEmpty()) return;
 		if(!ingame) {
 			System.out.println("No game running.");
+			args = null;
 			return;
 		}
 		if(!board.validPos(args[0])) {
 			System.out.printf("'%s' is not a valid board position.\n", args[0]);
+			args = null;
 			return;
 		}
 		Piece p = board.pieceOn(args[0]);
 		if(p == null) {
 			System.out.println("No piece on that square.");
+			args = null;
 			return;
 		}
 		if(p.possibleMoves.isEmpty()) {
 			System.out.printf("The %s on %s has no legal moves.\n", p.getName(), args[0]);
+			args = null;
 			return;
 		}
 		System.out.printf("The %s on %s has these moves:\n", p.getName(), args[0]);
@@ -69,6 +74,7 @@ public class Game {
 			}
 			System.out.print("\n");
 		}
+		args = null;
 	}
 	void showPossibleMoves() {
 		if(args == null || args.length < 1 || args[0].isEmpty()) return;
@@ -86,26 +92,32 @@ public class Game {
 	void move() {
 		if(args == null || args.length < 1 || args[0].isEmpty() || args[1].isEmpty())  {
 			System.out.println("No arguments given.");
+			args = null;
 			return;
 		}
 		if(!ingame) {
 			System.out.println("No game running.");
+			args = null;
 			return;
 		}
 		if(!board.validPos(args[0])) {
 			System.out.printf("'%s' is not a valid board position.\n", args[0]);
+			args = null;
 			return;
 		}
 		if(!board.validPos(args[1])) {
 			System.out.printf("'%s' is not a valid board position.\n", args[1]);
+			args = null;
 			return;
 		}
 		if(board.pieceOn(args[0]) == null) {
 			System.out.println("There is nothing on this square.");
+			args = null;
 			return;
 		}
 		if(board.pieceOn(args[0]).getColor() != turn) {
 			System.out.println("This piece is the wrong color.");
+			args = null;
 			return;
 		}
 		
@@ -119,7 +131,7 @@ public class Game {
 			promoting = true;
 			return;
 		}
-		
+		args = null;
 		nextTurn();
 	}
 	
@@ -144,6 +156,7 @@ public class Game {
 			}
 		}
 		System.out.printf("There is no piece called '%s'.\n", args[0]);
+		args = null;
 	}
 	
 	void loadBoard() {
@@ -215,6 +228,11 @@ public class Game {
 		turn = Color.values()[(turnCounter+1) % Color.values().length];
 		if(board.inCheckmate(turn)) {
 			System.out.printf("Checkmate!\nGame ended, %s wins.\n", Color.values()[(turnCounter) % Color.values().length].toString());
+			ingame = false;
+			return;
+		}
+		if(board.inStalemate(turn)) {
+			System.out.printf("%s is in Stalemate.\nGame ends in a draw.\n", turn.toString());
 			ingame = false;
 			return;
 		}

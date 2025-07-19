@@ -54,7 +54,7 @@ public class Board {
 			pieces[pos(i, 1)] = new Piece(PieceType.Pawn, Color.White);
 			pieces[pos(i, 6)] = new Piece(PieceType.Pawn, Color.Black);
 		}
-		fillMoves();
+		updatePossibleMoves();
 	}
 	
 	public Board(String fenPosition) {
@@ -73,6 +73,10 @@ public class Board {
 				char c = rank.charAt(i);
 				if(pstr.indexOf(Character.toLowerCase(c)) != -1) {
 					pieces[pos(x,y)] = new Piece(c);
+					if(pieces[pos(x,y)].getType() == PieceType.Pawn) {
+						if(pieces[pos(x,y)].getColor() == Color.White && y != 1) pieces[pos(x,y)].setMoved(true);
+						if(pieces[pos(x,y)].getColor() == Color.Black && y != 6) pieces[pos(x,y)].setMoved(true);
+					}
 					x++;
 				}
 				else if(c >= '1' && c <= '8') {
@@ -83,15 +87,18 @@ public class Board {
 		String castles = fenElements[2];
 		if(castles.equals("-")) {
 			for(int i=0;i<pieces.length;i++) {
+				if(pieces[i] == null) continue;
 				if(pieces[i].getType() == PieceType.Rook) pieces[i].setMoved(true);
 			}
 		}
-		if(!castles.contains("K")) pieces[pos(7,0)].setMoved(true);
-		if(!castles.contains("k")) pieces[pos(7,7)].setMoved(true);
-		if(!castles.contains("Q")) pieces[pos(0,0)].setMoved(true);
-		if(!castles.contains("q")) pieces[pos(0,7)].setMoved(true);
+		else {
+			if(!castles.contains("K")) pieces[pos(7,0)].setMoved(true);
+			if(!castles.contains("k")) pieces[pos(7,7)].setMoved(true);
+			if(!castles.contains("Q")) pieces[pos(0,0)].setMoved(true);
+			if(!castles.contains("q")) pieces[pos(0,7)].setMoved(true);
+		}
 		
-		fillMoves();
+		updatePossibleMoves();
 	}
 	
 	// TODO: Add En Passant
@@ -245,6 +252,7 @@ public class Board {
 		Color c = pieces[src].getColor();
 		// Since this function returns whether this move ends in check,
 		boolean check = false;
+		boolean movedBefore = pieces[src].hasMoved();
 		// we need to know the position of our king.
 		int kingPos = -1;
 		// For undoing the move later, we need to know what was on the destination square.
@@ -274,6 +282,8 @@ public class Board {
 		// This is the move we're simulating, putting the piece from src to dest
 		pieces[dest] = pieces[src];
 		pieces[src] = null;
+		if(pieces[dest].getType() == PieceType.King) kingPos = dest;
+		pieces[dest].setMoved(true);
 		//Castling
 		int difference = dest - src;
 		int rook = -1;
@@ -304,6 +314,7 @@ public class Board {
 		}
 		
 		// Since this is a simulation, we gotta undo the move.
+		pieces[dest].setMoved(movedBefore);
 		pieces[src] = pieces[dest];
 		pieces[dest] = pdest;
 		// Castling
@@ -399,8 +410,8 @@ public class Board {
 		}
 		return false;
 	}
-	public boolean inCheckmate(Color color) {
-		boolean checkmate = true;
+	private boolean hasNoMoves(Color color) {
+		boolean moveless = true;
 		ArrayList<Piece> piecePos = new ArrayList<Piece>();
 		for(int i=0;i<pieces.length;i++) {
 			Piece p = pieces[i];
@@ -409,10 +420,18 @@ public class Board {
 		}
 		
 		for(Piece p : piecePos) {
-			if(p.possibleMoves.size() > 0) checkmate = false;
+			if(p.possibleMoves.size() > 0) moveless = false;
 		}
 		
-		return checkmate;
+		return moveless;
+	}
+	
+	public boolean inStalemate(Color color) {
+		return !inCheck(color) && hasNoMoves(color);
+	}
+	
+	public boolean inCheckmate(Color color) {
+		return inCheck(color) && hasNoMoves(color);
 	}
 	
 	public boolean movePiece(String piecePosition, String destination) {
