@@ -20,6 +20,47 @@ public class MoveDecoder {
 	
 	public String[] decode(Color turn, String input) {
 		String[] out = new String[2];
+		// Castling
+		if(input.equals("O-O") || input.equals("o-o")) {
+			int kingPos[] = { 60, 4 };
+			int castlePos[] = { 62, 6 };
+			Piece p = b.pieceOn(kingPos[turn.ordinal()]);
+			if(p != null && p.getType() == PieceType.King && p.getColor() == turn && !p.hasMoved()){
+				if(p.possibleMoves.contains(castlePos[turn.ordinal()])) {
+					out[0] = parseIndex(kingPos[turn.ordinal()]);
+					out[1] = parseIndex(castlePos[turn.ordinal()]);
+					return out;
+				}
+				else {
+					System.out.println("You currently cannot castle kingside.");
+					return null;
+				}
+			}
+			else {
+				System.out.println("Your King has moved, forfeiting all castling rights.");
+				return null;
+			}
+		}
+		if(input.equals("O-O-O") || input.equals("o-o-o")) {
+			int kingPos[] = { 60, 4 };
+			int castlePos[] = { 58, 2 };
+			Piece p = b.pieceOn(kingPos[turn.ordinal()]);
+			if(p != null && p.getType() == PieceType.King && p.getColor() == turn && !p.hasMoved()){
+				if(p.possibleMoves.contains(castlePos[turn.ordinal()])) {
+					out[0] = parseIndex(kingPos[turn.ordinal()]);
+					out[1] = parseIndex(castlePos[turn.ordinal()]);
+					return out;
+				}
+				else {
+					System.out.println("You currently cannot castle queenside.");
+					return null;
+				}
+			}
+			else {
+				System.out.println("Your King has moved, forfeiting all castling rights.");
+				return null;
+			}
+		}
 		// Pawn move
 		if(input.length() == 2 && !b.validPos(input)) {
 			System.out.println("Not a legal Pawn move.");
@@ -40,6 +81,7 @@ public class MoveDecoder {
 				}
 			}
 			System.out.println("No pawn reaches this square.");
+			return null;
 		}
 		// Other moves
 		String pieces = "PBNRQK";

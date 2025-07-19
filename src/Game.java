@@ -87,7 +87,7 @@ public class Game {
 	}
 	
 	void move() {
-		if(args == null || args.length < 1 || args[0].isEmpty() || args[1].isEmpty())  {
+		if(args == null || args.length < 2 || args[0].isEmpty() || args[1].isEmpty())  {
 			System.out.println("No arguments given.");
 			return;
 		}
