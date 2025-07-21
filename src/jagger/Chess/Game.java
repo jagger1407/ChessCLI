@@ -235,7 +235,7 @@ public class Game {
 		int mat[] = { 0, 0 };
 		for(int i=0;i<64;i++) {
 			Piece p = board.pieceOn(i);
-			if(p == null)
+			if(p == null) continue;
 			if(p.getColor() == Color.White) mat[Color.White.ordinal()] += PieceType.material[p.getType().ordinal()];
 			else mat[Color.Black.ordinal()] += PieceType.material[p.getType().ordinal()];
 		}
