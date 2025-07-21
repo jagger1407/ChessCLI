@@ -15,11 +15,11 @@ Note: [arg] are required parameters, \<arg\> are optional
 
 *italic* arguments are the default.
 - **start**
-  - Syntax: start <*pvp*|bot> [black|white]
+  - Syntax: start \<*pvp*|bot\> [black|white]
   - Starts a game of chess.
   - If a bot match is selected, you must choose a side via the second argument.
 - **board**
-  - Syntax: board <square>
+  - Syntax: board \<square\>
   - Prints the current state of the board to the console.
   - If a square is specified, it shows all the legal moves for the piece on that square.
 - **reverse**
