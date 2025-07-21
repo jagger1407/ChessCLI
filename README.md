@@ -22,6 +22,9 @@ Note: [arg] are required parameters, \<arg\> are optional
   - Syntax: board <square>
   - Prints the current state of the board to the console.
   - If a square is specified, it shows all the legal moves for the piece on that square.
+- **reverse**
+  - Syntax: reverse
+  - Reverses the board view accessed via the `board` command.
 - **moves**
   - Syntax: moves [square]
   - Prints all legal moves of the piece on this square.

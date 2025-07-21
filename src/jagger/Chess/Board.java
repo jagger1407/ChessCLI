@@ -560,48 +560,84 @@ public class Board {
 		return out;
 	}
 	
-	public String toString() {
+	public String toString(boolean reverse) {
 		String split = " +---+---+---+---+---+---+---+---+";
 		String board = "";
 		board += split + "\n";
-		for(int y=7;y>=0;y--) {
-			String rank = String.format("%d| ", y+1);
-			for(int x=0;x<8;x++) {
-				if(pieces[y * 8 + x] != null) {
-					rank += pieces[y * 8 + x].toString() + " | ";
+		if(reverse) {
+			for(int y=0;y<8;y++) {
+				String rank = String.format("%d| ", y+1);
+				for(int x=0;x<8;x++) {
+					if(pieces[y * 8 + x] != null) {
+						rank += pieces[y * 8 + x].toString() + " | ";
+					}
+					else rank += "  | ";
 				}
-				else rank += "  | ";
+				board += rank + "\n";
+				board += split + "\n";
 			}
-			board += rank + "\n";
-			board += split + "\n";
 		}
+		else {
+			for(int y=7;y>=0;y--) {
+				String rank = String.format("%d| ", y+1);
+				for(int x=0;x<8;x++) {
+					if(pieces[y * 8 + x] != null) {
+						rank += pieces[y * 8 + x].toString() + " | ";
+					}
+					else rank += "  | ";
+				}
+				board += rank + "\n";
+				board += split + "\n";
+			}
+		}
+			
 		board += "   a   b   c   d   e   f   g   h\n";
 		return board;
 	}
-	public String toString(String piecePosition) {
-		if(!validPos(piecePosition)) return toString();
-		if(pieceOn(piecePosition) == null) return toString();
+	public String toString(String piecePosition, boolean reverse) {
+		if(!validPos(piecePosition)) return toString(reverse);
+		if(pieceOn(piecePosition) == null) return toString(reverse);
 		
 		Piece p = pieceOn(piecePosition);
 		
 		String split = " +---+---+---+---+---+---+---+---+";
 		String board = "";
 		board += split + "\n";
-		for(int y=7;y>=0;y--) {
-			String rank = String.format("%d|", y+1);
-			for(int x=0;x<8;x++) {
-				// 1|
-				String square = pieceOn(x,y) == null ? " " : pieceOn(x,y).toString();
-				if(p.possibleMoves.contains(pos(x,y))) {
-					rank += String.format(">%s<|", square);
+		if(reverse) {
+			for(int y=0;y<8;y++) {
+				String rank = String.format("%d|", y+1);
+				for(int x=0;x<8;x++) {
+					// 1|
+					String square = pieceOn(x,y) == null ? " " : pieceOn(x,y).toString();
+					if(p.possibleMoves.contains(pos(x,y))) {
+						rank += String.format(">%s<|", square);
+					}
+					else {
+						rank += String.format(" %s |", square);
+					}
 				}
-				else {
-					rank += String.format(" %s |", square);
-				}
+				board += rank + "\n";
+				board += split + "\n";
 			}
-			board += rank + "\n";
-			board += split + "\n";
 		}
+		else {
+			for(int y=7;y>=0;y--) {
+				String rank = String.format("%d|", y+1);
+				for(int x=0;x<8;x++) {
+					// 1|
+					String square = pieceOn(x,y) == null ? " " : pieceOn(x,y).toString();
+					if(p.possibleMoves.contains(pos(x,y))) {
+						rank += String.format(">%s<|", square);
+					}
+					else {
+						rank += String.format(" %s |", square);
+					}
+				}
+				board += rank + "\n";
+				board += split + "\n";
+			}
+		}
+		
 		board += "   a   b   c   d   e   f   g   h\n";
 		return board;
 	}

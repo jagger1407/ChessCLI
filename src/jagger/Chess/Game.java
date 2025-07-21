@@ -11,6 +11,7 @@ public class Game {
 	boolean ingame;
 	boolean promoting;
 	boolean botMatch;
+	boolean reverseBoard;
 	Piece promotingPiece;
 	Color turn;
 	Color playerColor = null;
@@ -71,7 +72,7 @@ public class Game {
 			showPossibleMoves();
 			return;
 		}
-		System.out.println(board.toString());
+		System.out.println(board.toString(reverseBoard));
 	}
 	void exit() {
 		running = false;
@@ -115,7 +116,7 @@ public class Game {
 			System.out.printf("'%s' is not a valid board position.\n", args[0]);
 			return;
 		}
-		System.out.println(board.toString(args[0]));
+		System.out.println(board.toString(args[0], reverseBoard));
 	}
 	
 	void move() {
@@ -241,6 +242,15 @@ public class Game {
 		System.out.printf("White has %d points of material.\nBlack has %d points of material.\n", mat[Color.White.ordinal()], mat[Color.Black.ordinal()]);
 	}
 	
+	void reverseBoardView() {
+		if(!ingame) {
+			System.out.println("Board hasn't been initialized yet.");
+			return;
+		}
+		reverseBoard = true;
+		System.out.println("Board view reversed.");
+	}
+	
 	public Game() {
 		running = true;
 		ingame = false;
@@ -258,6 +268,7 @@ public class Game {
 			new ActionHandler("resign", () -> resign()),
 			new ActionHandler("export", () -> export()),
 			new ActionHandler("material", () -> showMaterial()),
+			new ActionHandler("reverse", () -> reverseBoardView()),
 		};
 	}
 	
@@ -283,7 +294,7 @@ public class Game {
 	public static void main(String[] args) {
 		Game g = new Game();
 		Scanner input = new Scanner(System.in);
-		
+		g.reverseBoard = false;
 		
 		while(g.running) {
 			String inStr;
