@@ -225,6 +225,21 @@ public class Game {
 		ingame = false;
 	}
 	
+	void showMaterial() {
+		if(!ingame) {
+			System.out.println("No game running.");
+			return;
+		}
+		int mat[] = { 0, 0 };
+		for(int i=0;i<64;i++) {
+			Piece p = board.pieceOn(i);
+			if(p == null)
+			if(p.getColor() == Color.White) mat[Color.White.ordinal()] += PieceType.material[p.getType().ordinal()];
+			else mat[Color.Black.ordinal()] += PieceType.material[p.getType().ordinal()];
+		}
+		System.out.printf("White has %d points of material.\nBlack has %d points of material.\n", mat[Color.White.ordinal()], mat[Color.Black.ordinal()]);
+	}
+	
 	public Game() {
 		running = true;
 		ingame = false;
@@ -241,6 +256,7 @@ public class Game {
 			new ActionHandler("load", () -> loadBoard()),
 			new ActionHandler("resign", () -> resign()),
 			new ActionHandler("export", () -> export()),
+			new ActionHandler("material", () -> showMaterial()),
 		};
 	}
 	
