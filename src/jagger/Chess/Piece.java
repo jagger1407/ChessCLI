@@ -1,3 +1,4 @@
+package jagger.Chess;
 import java.util.ArrayList;
 
 public class Piece {

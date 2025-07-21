@@ -1,3 +1,4 @@
+package jagger.Chess;
 import java.util.ArrayList;
 
 public class Board {
@@ -99,6 +100,14 @@ public class Board {
 		}
 		
 		updatePossibleMoves();
+	}
+	
+	public ArrayList<Piece> getColoredPieces(Color color) {
+		ArrayList<Piece> p = new ArrayList<Piece>();
+		for(int i=0;i<pieces.length;i++) {
+			if(pieces[i] != null && pieces[i].getColor() == color) p.add(pieces[i]);
+		}
+		return p;
 	}
 	
 	// TODO: Add En Passant
@@ -238,12 +247,14 @@ public class Board {
 		}
 		if(pieceOn(x,y).hasMoved()) return;
 		// Kingside Castling
-		if(pieceOn(7,y) != null && !pieceOn(7,y).hasMoved()) {
-			if(pieceOn(6,y) == null && pieceOn(5,y) == null) list.add(pos(6,y));
+		if(pieceOn(7,y) != null && pieceOn(7,y).getType() == PieceType.Rook && !pieceOn(7,y).hasMoved()) {
+			if(pieceOn(6,y) == null && pieceOn(5,y) == null) 
+				list.add(pos(6,y));
 		}
 		// Queenside Castling
-		if(pieceOn(0,y) != null && !pieceOn(0,y).hasMoved()) {
-			if(pieceOn(3,y) == null && pieceOn(2,y) == null && pieceOn(1,y) == null) list.add(pos(2,y));
+		if(pieceOn(0,y) != null && pieceOn(0,y).getType() == PieceType.Rook && !pieceOn(0,y).hasMoved()) {
+			if(pieceOn(3,y) == null && pieceOn(2,y) == null && pieceOn(1,y) == null) 
+				list.add(pos(2,y));
 		}
 	}
 	
@@ -325,7 +336,7 @@ public class Board {
 		}
 		// Queenside
 		else if(rook == pos(0, y)) {
-			pieces[rook] = pieces[pos(5, y)];
+			pieces[rook] = pieces[pos(3, y)];
 			pieces[pos(3,y)] = null;
 		}
 		// This loop resets the state of each piece, INCLUDING checks for ending in check.

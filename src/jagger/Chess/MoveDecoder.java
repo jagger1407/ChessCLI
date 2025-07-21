@@ -1,14 +1,16 @@
+package jagger.Chess;
+import java.util.ArrayList;
 
 public class MoveDecoder {
 
 	private Board b;
 	
-	private int parseSquare(String pos) {
+	public int parseSquare(String pos) {
 		if(pos.length() != 2 || !b.validPos(pos)) return -1;
 		return (pos.charAt(1) - '1') * 8 + (pos.charAt(0) - 'a'); 
 	}
 	
-	private String parseIndex(int index) {
+	public String parseIndex(int index) {
 		int x = index % 8;
 		int y = index / 8;
 		return String.format("%c%d", 'a' + x, y+1);
@@ -17,7 +19,9 @@ public class MoveDecoder {
 	public MoveDecoder(Board board) {
 		b = board;
 	}
-	
+	public ArrayList<Piece> getPieces(Color side) {
+		return b.getColoredPieces(side);
+	}
 	public String[] decode(Color turn, String input) {
 		String[] out = new String[2];
 		// Castling

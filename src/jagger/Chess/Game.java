@@ -1,4 +1,8 @@
+package jagger.Chess;
 import java.util.Scanner;
+
+import bots.Bot;
+import bots.RandomBot;
 
 public class Game {
 	
@@ -6,12 +10,15 @@ public class Game {
 	boolean running;
 	boolean ingame;
 	boolean promoting;
+	boolean botMatch;
 	Piece promotingPiece;
 	Color turn;
+	Color playerColor = null;
 	int turnCounter;
 	ActionHandler[] actions;
 	
-	MoveDecoder dc = null;
+	MoveDecoder dc;
+	Bot bot;
 	
 	String[] args = null;
 	
@@ -20,14 +27,38 @@ public class Game {
 			System.out.println("A game is currently running. Resign if you want to start a new game.");
 			return;
 		}
+		if(args == null || args[0].equals("pvp")) {
+			botMatch = false;
+		}
+		else if(args[0].equals("bot")) {
+			botMatch = true;
+			String sides[] = { "black", "white" };
+			if(args.length < 2 || args[1] == null) {
+				System.out.println("If a bot match is started, your color must be selected.");
+				System.out.println("Syntax: start bot [white|black]");
+				return;
+			}
+			for(int i=0;i<sides.length;i++) {
+				if(args[1].toLowerCase().equals(sides[i])) {
+					playerColor = Color.values()[i];
+				}
+			}
+			if(playerColor == null) {
+				System.out.printf("'%s' is not a valid option.\n", args[1]);
+				return;
+			}
+		}
 		ingame = true;
 		promoting = false;
 		promotingPiece = null;
 		board = new Board();
-		dc = new MoveDecoder(board);
 		System.out.println("Board initialized.");
 		turnCounter = 0;
 		turn = Color.values()[(turnCounter+1) % Color.values().length];
+		dc = new MoveDecoder(board);
+		if(playerColor != null) {
+			bot = new RandomBot(Color.values()[(turnCounter+2) % Color.values().length], board);
+		}
 		System.out.printf("Turn %d. %s to move.\n", turnCounter / 2 + 1, turn.toString());
 	}
 	void printBoard() {
@@ -238,8 +269,14 @@ public class Game {
 		
 		
 		while(g.running) {
-			System.out.print("> ");
-			String inStr = input.nextLine();
+			String inStr;
+			if(g.ingame && g.botMatch && g.turn != g.playerColor) {
+				inStr = g.bot.getNextMove();
+			}
+			else {
+				System.out.print("> ");
+				inStr = input.nextLine();
+			}
 			if(inStr.isEmpty()) continue;
 			if(inStr.contains(" ")) {
 				int argc = inStr.split(" ").length - 1;

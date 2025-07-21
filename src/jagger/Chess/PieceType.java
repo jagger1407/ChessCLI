@@ -1,3 +1,4 @@
+package jagger.Chess;
 
 public enum PieceType {
 	Pawn,
@@ -7,12 +8,12 @@ public enum PieceType {
 	Queen,
 	King;
 	
-	public int material[] = {
+	public static int material[] = {
 		1,
 		3,
 		3,
 		5,
 		9,
-		0
+		1
 	};
 }
