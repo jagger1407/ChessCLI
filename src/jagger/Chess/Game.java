@@ -57,7 +57,8 @@ public class Game {
 		turn = Color.values()[(turnCounter+1) % Color.values().length];
 		dc = new MoveDecoder(board);
 		if(playerColor != null) {
-			bot = new RandomBot(Color.values()[(turnCounter+2) % Color.values().length], board);
+			if(playerColor == Color.White) bot = new RandomBot(Color.Black, board);
+			else bot = new RandomBot(Color.White, board);
 		}
 		System.out.printf("Turn %d. %s to move.\n", turnCounter / 2 + 1, turn.toString());
 	}
