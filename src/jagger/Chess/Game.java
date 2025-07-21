@@ -1,8 +1,8 @@
 package jagger.Chess;
 import java.util.Scanner;
 
-import bots.Bot;
-import bots.RandomBot;
+import jagger.Chess.bots.Bot;
+import jagger.Chess.bots.RandomBot;
 
 public class Game {
 	

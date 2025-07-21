@@ -1,4 +1,4 @@
-package bots;
+package jagger.Chess.bots;
 
 import java.util.ArrayList;
 
