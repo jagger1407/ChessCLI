@@ -48,6 +48,7 @@ Note: [arg] are required parameters, \<arg\> are optional
   - syntax: exit|end|quit|stop
   - Quit the program.
 ## Todo
+- En Passant (IMPORTANT)
 - Create more bots, and a selection of which one you want to play.
 - Save a game after playing
 - Export a game as a series of algebraic moves (e.g. "1. e4 e5")
