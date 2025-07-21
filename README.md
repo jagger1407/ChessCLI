@@ -1,5 +1,15 @@
 # ChessCLI
 Play chess via the command-line!
+## How to run
+Note: This program was programmed in Java 21, so an installation of [java](https://www.oracle.com/java/technologies/downloads/#java21) is required.
+
+### **Compiling**
+If you want to compile this program, open a terminal inside the project directory and type:
+```bash
+mkdir bin
+javac -d bin src/jagger/Chess/*.java src/jagger/Chess/bots/*.java
+```
+After this, you can run the game by using `java -cp bin jagger.Chess.Game`.
 ## Commands
 Note: [arg] are required parameters, \<arg\> are optional
 
@@ -40,3 +50,4 @@ Note: [arg] are required parameters, \<arg\> are optional
 - Export a game as a series of algebraic moves (e.g. "1. e4 e5")
 - Add ability to add game variations (fog of war)
 - Rewrite the code to be better
+- Create runnable .jar or .exe or smth
