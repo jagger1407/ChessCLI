@@ -26,7 +26,7 @@ Note: [arg] are required parameters, \<arg\> are optional
   - Prints the board to the console, highlighting all legal moves of the piece on the specified square.
 - **reverse**
   - Syntax: reverse
-  - Reverses the board view accessed via the `board` command.
+  - Reverses the board view accessed via the `show` commands.
 - **moves**
   - Syntax: moves [square]
   - Prints all legal moves of the piece on this square.
