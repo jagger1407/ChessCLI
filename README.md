@@ -41,10 +41,11 @@ Note: [arg] are required parameters, \<arg\> are optional
   - If `pgn` is selected, the board plays through all the contained moves.
   - Note: For PGN loads, each move must be separated with spaces, not newlines.
 - **export**
-  - Syntax: export [fen|*pgn*]
+  - Syntax: export [fen|*pgn*] \<filepath\>
   - Prints the specified format to the console.
   - If `fen` is selected, the current state of the board is printed.
   - If `pgn` is selected, the game up to this point is printed.
+  - If `filepath` is specified, the output will be redirected to the file.
 - **material**
   - Syntax: material
   - Prints the current material value for each side.
@@ -61,8 +62,6 @@ Note: [arg] are required parameters, \<arg\> are optional
 ## Todo
 - En Passant (IMPORTANT)
 - Create more bots, and a selection of which one you want to play.
-- Save a game after playing
-- Export a game as a series of algebraic moves (e.g. "1. e4 e5")
 - Add ability to add game variations (fog of war)
 - Rewrite the code to be better
 - Create runnable .jar or .exe or smth

@@ -1,6 +1,8 @@
 package jagger.Chess;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 
 import jagger.Chess.bots.Bot;
 import jagger.Chess.bots.RandomBot;
@@ -272,21 +274,39 @@ public class Game {
 		}
 		else format = args[0].toLowerCase();
 		
-		if(format.equals("fen")) {
-			System.out.println("The current FEN-Position of the board is:");
-			System.out.println(board.getPosition(turn, turnCounter));
-		}
-		else if(format.equals("pgn")) {
-			System.out.println("The PGN of this game is:");
-			for(int i=0;i<pgn.size();i++) {
-				System.out.println(pgn.get(i));
+		PrintStream outbox;
+		if(args.length == 2) {
+			try {
+				outbox = new PrintStream(args[1]);
 			}
-			if(!curPgn.equals("")) {
-				System.out.println(curPgn);
+			catch(FileNotFoundException ex) {
+				System.out.println("File can't be written to.");
+				return;
 			}
 		}
 		else {
-			System.out.println("Format not supported.");
+			outbox = System.out;
+		}
+		
+		if(format.equals("fen")) {
+			outbox.println(board.getPosition(turn, turnCounter));
+		}
+		else if(format.equals("pgn")) {
+			char separator = outbox == System.out ? '\n' : ' ';
+			for(int i=0;i<pgn.size();i++) {
+				outbox.print(pgn.get(i) + separator);
+			}
+			if(!curPgn.equals("")) {
+				outbox.println(curPgn);
+			}
+		}
+		else {
+			outbox.println("Format not supported.");
+		}
+		outbox.flush();
+		if(outbox != System.out) {
+			System.out.printf("Export was written to '%s'.\n", args[1]);
+			outbox.close();
 		}
 	}
 	
