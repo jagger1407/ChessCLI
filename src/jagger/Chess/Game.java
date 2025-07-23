@@ -232,14 +232,26 @@ public class Game {
 			System.out.println("No game running.");
 			return;
 		}
+		int white = Color.White.ordinal();
+		int black = Color.Black.ordinal();
 		int mat[] = { 0, 0 };
+		String matStr[] = { "", "" }; 
 		for(int i=0;i<64;i++) {
 			Piece p = board.pieceOn(i);
 			if(p == null) continue;
-			if(p.getColor() == Color.White) mat[Color.White.ordinal()] += PieceType.material[p.getType().ordinal()];
-			else mat[Color.Black.ordinal()] += PieceType.material[p.getType().ordinal()];
+			if(p.getColor() == Color.White) mat[white] += PieceType.material[p.getType().ordinal()];
+			else mat[black] += PieceType.material[p.getType().ordinal()];
 		}
-		System.out.printf("White has %d points of material.\nBlack has %d points of material.\n", mat[Color.White.ordinal()], mat[Color.Black.ordinal()]);
+		matStr[white] = String.format("White has %d points of material.", mat[white]);
+		matStr[black] = String.format("Black has %d points of material.", mat[black]);
+		if(mat[white] > mat[black]) {
+			matStr[white] += String.format(" (+%d)", mat[white] - mat[black]);
+		}
+		else if(mat[black] > mat[white]) {
+			matStr[black] += String.format(" (+%d)", mat[black] - mat[white]);
+		}
+		System.out.println(matStr[white]);
+		System.out.println(matStr[black]);
 	}
 	
 	void reverseBoardView() {
