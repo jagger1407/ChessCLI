@@ -141,11 +141,8 @@ public class Board {
 			if(nx < 0) break;
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
-				if(p.getColor() == bishop.getColor()) break;
-				else {
-					list.add(pos(nx,ny));
-					break;
-				}
+				if(p.getColor() != bishop.getColor()) list.add(pos(nx, ny));
+				break;
 			}
 			list.add(pos(nx,ny));
 		}
@@ -155,11 +152,8 @@ public class Board {
 			if(nx >= 8) break;
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
-				if(p.getColor() == bishop.getColor()) break;
-				else {
-					list.add(pos(nx,ny));
-					break;
-				}
+				if(p.getColor() != bishop.getColor()) list.add(pos(nx, ny));
+				break;
 			}
 			list.add(pos(nx,ny));
 		}
@@ -169,11 +163,8 @@ public class Board {
 			if(nx < 0) break;
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
-				if(p.getColor() == bishop.getColor()) break;
-				else {
-					list.add(pos(nx,ny));
-					break;
-				}
+				if(p.getColor() != bishop.getColor()) list.add(pos(nx, ny));
+				break;
 			}
 			list.add(pos(nx,ny));
 		}
@@ -183,11 +174,8 @@ public class Board {
 			if(nx >= 8) break;
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
-				if(p.getColor() == bishop.getColor()) break;
-				else {
-					list.add(pos(nx,ny));
-					break;
-				}
+				if(p.getColor() != bishop.getColor()) list.add(pos(nx, ny));
+				break;
 			}
 			list.add(pos(nx,ny));
 		}
