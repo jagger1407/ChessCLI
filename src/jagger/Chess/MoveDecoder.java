@@ -134,7 +134,7 @@ public class MoveDecoder {
 			return null;
 		}
 		else if(legalMovers > 1) {
-			System.out.printf("Multiple of your %ss can reach that square. Specify which %s.", type.toString(), type.toString());
+			System.out.printf("Multiple of your %ss can reach that square. Specify which %s.\n", type.toString(), type.toString());
 			return null;
 		}
 		else {
@@ -143,5 +143,34 @@ public class MoveDecoder {
 			return out;
 		}
 	}
-
+	public String encode(String src, String dest) {
+		String out = "";
+		
+		if(!b.validPos(src)) {
+			System.out.printf("%s is not a valid square.\n", src);
+			return null;
+		}
+		else if(!b.validPos(dest)) {
+			System.out.printf("%s is not a valid square.\n", dest);
+			return null;
+		}
+		
+		Piece sp = b.pieceOn(src);
+		Piece dp = b.pieceOn(dest);
+		if(sp.getType() == PieceType.Pawn) {
+			if(dp != null) {
+				out = String.format("%cx%s", src.charAt(0), dest);
+			}
+			else {
+				out = dest;
+			}
+		}
+		else {
+			out += sp.toString().toUpperCase();
+			if(dp != null) out += "x";
+			out += dest;
+		}
+		
+		return out;
+	}
 }
