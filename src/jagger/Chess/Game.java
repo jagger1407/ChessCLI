@@ -1,4 +1,5 @@
 package jagger.Chess;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import jagger.Chess.bots.Bot;
@@ -20,6 +21,9 @@ public class Game {
 	
 	MoveDecoder dc;
 	Bot bot;
+	
+	String curPgn;
+	ArrayList<String> pgn;
 	
 	String[] args = null;
 	
@@ -53,6 +57,8 @@ public class Game {
 		promoting = false;
 		promotingPiece = null;
 		board = new Board();
+		pgn = new ArrayList<String>();
+		curPgn = "";
 		System.out.println("Board initialized.");
 		turnCounter = 0;
 		turn = Color.values()[(turnCounter+1) % Color.values().length];
@@ -141,6 +147,11 @@ public class Game {
 			return;
 		}
 		
+		if(turn == Color.White) curPgn += String.format("%d. %s", turnCounter / 2 + 1, dc.encode(args[0], args[1]));
+		else {
+			curPgn += " " + dc.encode(args[0], args[1]);
+		}
+		
 		boolean successful = board.movePiece(args[0], args[1]);
 		if(!successful) return;
 		
@@ -152,6 +163,17 @@ public class Game {
 			return;
 		}
 		nextTurn();
+		
+		if(board.inCheck(turn)) {
+			curPgn += "+";
+		}
+		else if(board.inCheckmate(turn)) {
+			curPgn += "#";
+		}
+		if(turn == Color.White) {
+			pgn.add(curPgn);
+			curPgn = "";
+		}
 	}
 	
 	void promote() {
@@ -170,7 +192,12 @@ public class Game {
 				promoting = false;
 				args = null;
 				board.updatePossibleMoves();
+				curPgn += "=" + promotingPiece.toString().toUpperCase();
 				nextTurn();
+				if(turn == Color.White) {
+					pgn.add(curPgn);
+					curPgn = "";
+				}
 				return;
 			}
 		}
@@ -209,8 +236,28 @@ public class Game {
 			System.out.println("No game has been played yet.");
 			return;
 		}
-		System.out.println("The current FEN-Position of the board is:");
-		System.out.println(board.getPosition(turn, turnCounter));
+		String format;
+		if(args == null || args.length < 1 || args[0].isEmpty()) {
+			format = "fen";
+		}
+		else format = args[0].toLowerCase();
+		
+		if(format.equals("fen")) {
+			System.out.println("The current FEN-Position of the board is:");
+			System.out.println(board.getPosition(turn, turnCounter));
+		}
+		else if(format.equals("pgn")) {
+			System.out.println("The PGN of this game is:");
+			for(int i=0;i<pgn.size();i++) {
+				System.out.println(pgn.get(i));
+			}
+			if(!curPgn.equals("")) {
+				System.out.println(curPgn);
+			}
+		}
+		else {
+			System.out.println("Format not supported.");
+		}
 	}
 	
 	void resign() {
@@ -357,6 +404,7 @@ public class Game {
 					if(move == null) continue;
 					g.args = move;
 					g.move();
+					g.args = null;
 					continue;
 				}
 				System.out.println("Unknown action '" + inStr + "'.");
