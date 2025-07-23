@@ -68,10 +68,6 @@ public class Game {
 			System.out.println("No game running.");
 			return;
 		}
-		if(args != null && args.length > 0) {
-			showPossibleMoves();
-			return;
-		}
 		System.out.println(board.toString(reverseBoard));
 	}
 	void exit() {
@@ -264,13 +260,29 @@ public class Game {
 		System.out.println("Board view reversed.");
 	}
 	
+	void showSelect() {
+		if(args == null || args.length < 1 || args[0].isEmpty()) return;
+		
+		String selection = args[0].toLowerCase();
+		
+		if(selection.equals("board")) printBoard();
+		else if(selection.equals("moves")) {
+			String[] newArgs = new String[1];
+			newArgs[0] = args[1];
+			args = newArgs;
+			showPossibleMoves();
+		}
+		else {
+			System.out.printf("Unknown selection '%s'\n", args[0]);
+		}
+	}
+	
 	public Game() {
 		running = true;
 		ingame = false;
 		
 		actions = new ActionHandler[] {
 			new ActionHandler("start", () -> start()),
-			new ActionHandler("board", () -> printBoard()),
 			new ActionHandler("exit", () -> exit()),
 			new ActionHandler("end", () -> exit()),
 			new ActionHandler("quit", () -> exit()),
@@ -282,6 +294,7 @@ public class Game {
 			new ActionHandler("export", () -> export()),
 			new ActionHandler("material", () -> showMaterial()),
 			new ActionHandler("reverse", () -> reverseBoardView()),
+			new ActionHandler("show", () -> showSelect()),
 		};
 	}
 	

@@ -18,10 +18,12 @@ Note: [arg] are required parameters, \<arg\> are optional
   - Syntax: start \<*pvp*|bot\> [black|white]
   - Starts a game of chess.
   - If a bot match is selected, you must choose a side via the second argument.
-- **board**
-  - Syntax: board \<square\>
+- **show board**
+  - Syntax: show board
   - Prints the current state of the board to the console.
-  - If a square is specified, it shows all the legal moves for the piece on that square.
+- **show moves**
+  - Syntax: show moves [square]
+  - Prints the board to the console, highlighting all legal moves of the piece on the specified square.
 - **reverse**
   - Syntax: reverse
   - Reverses the board view accessed via the `board` command.
