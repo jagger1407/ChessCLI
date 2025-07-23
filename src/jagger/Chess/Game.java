@@ -354,6 +354,27 @@ public class Game {
 		}
 	}
 	
+	void addBot() {
+		if(args == null || args.length < 1 || args[0].isEmpty()) return;
+		
+		String side = args[0].toLowerCase();
+		botMatch = true;
+		if(side.equals("white")) {
+			playerColor = Color.Black;
+			bot = new RandomBot(Color.White, board);
+			System.out.println("A bot is now playing with the white pieces.");
+		}
+		else if(side.equals("black")) {
+			playerColor = Color.White;
+			bot = new RandomBot(Color.Black, board);
+			System.out.println("A bot is now playing with the black pieces.");
+		}
+		else {
+			System.out.println("Unknown argument. Bot can only be black or white.");
+			botMatch = false;
+		}
+	}
+	
 	public Game() {
 		running = true;
 		ingame = false;
@@ -372,6 +393,7 @@ public class Game {
 			new ActionHandler("material", () -> showMaterial()),
 			new ActionHandler("reverse", () -> reverseBoardView()),
 			new ActionHandler("show", () -> showSelect()),
+			new ActionHandler("bot", () -> addBot()),
 		};
 	}
 	

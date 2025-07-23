@@ -48,6 +48,10 @@ Note: [arg] are required parameters, \<arg\> are optional
 - **material**
   - Syntax: material
   - Prints the current material value for each side.
+- **bot**
+  - Syntax: bot [white|black]
+  - Makes a bot take over a side.
+  - Note: Only 1 bot can play at a time.
 - **resign**
   - Syntax: resign
   - The current player resigns and the opposing player wins the game.
