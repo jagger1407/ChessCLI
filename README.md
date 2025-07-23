@@ -35,11 +35,12 @@ Note: [arg] are required parameters, \<arg\> are optional
   - Moves a piece from the source square to the destination square.
   - It is preferred to use algebraic notation (example: Nc4).
 - **load**
-  - Syntax: load [*fen*|pgn] [position]
+  - Syntax: load [*fen*|pgn] [position|filename]
   - Loads the specified format.
   - If `fen` is selected, the board is set up to match the position.
   - If `pgn` is selected, the board plays through all the contained moves.
   - Note: For PGN loads, each move must be separated with spaces, not newlines.
+  - If the format is `pgn` and a filename is specified, the file will be read and the PGN will be loaded.
 - **export**
   - Syntax: export [fen|*pgn*] \<filepath\>
   - Prints the specified format to the console.

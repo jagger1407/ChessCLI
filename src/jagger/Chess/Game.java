@@ -2,6 +2,7 @@ package jagger.Chess;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.PrintStream;
 
 import jagger.Chess.bots.Bot;
@@ -212,17 +213,41 @@ public class Game {
 		
 		String format = args[0].toLowerCase();
 		
+		Scanner fs;
+		if(args.length == 2) {
+			try {
+				fs = new Scanner(new File(args[1]));
+				String fileText = "";
+				while(fs.hasNextLine()) {
+					fileText += fs.nextLine();
+					if(!fileText.endsWith(" ")) fileText += " ";
+				}
+				fileText = fileText.substring(0, fileText.length() - 1);
+				args = fileText.split(" ");
+				fs.close();
+				System.out.println("File loaded.");
+			} catch (FileNotFoundException e) {
+				System.out.println("File couldn't be read.");
+				return;
+			}
+		}
+		else {
+			String[] newArgs = new String[args.length - 1];
+			System.arraycopy(args, 1, newArgs, 0, newArgs.length);
+			args = newArgs;
+		}
+		
 		if(format.equals("fen")) {
-			if(args.length != 7) {
+			if(args.length != 6) {
 				System.out.println("This is not a valid FEN-notation.");
 				return;
 			}
-			if(args[2].equals("w")) {
-				if(args[6].equals("1")) turnCounter = -1;
-				else turnCounter = (args[6].charAt(0) - '0') * 2 - 3;
+			if(args[1].equals("w")) {
+				if(args[5].equals("1")) turnCounter = -1;
+				else turnCounter = (args[5].charAt(0) - '0') * 2 - 3;
 			}
-			else if(args[2].equals("b")) {
-				turnCounter = (args[6].charAt(0) - '0') * 2 - 2;
+			else if(args[1].equals("b")) {
+				turnCounter = (args[5].charAt(0) - '0') * 2 - 2;
 			}
 			else {
 				System.out.println("(w)hite or (b)lack, those are the only 2 sides.");
@@ -234,14 +259,10 @@ public class Game {
 			System.out.println("Board position loaded.");
 		}
 		else if(format.equals("pgn")) {
-			String[] pgnlist = new String[args.length - 1];
-			for(int i=0;i<pgnlist.length;i++) {
-				pgnlist[i] = args[i + 1];
-			}
-			args = null;
+			ingame = false;
 			start();
-			for(int i=0;i<pgnlist.length;i++) {
-				String cur = pgnlist[i];
+			for(int i=0;i<args.length;i++) {
+				String cur = args[i];
 				if(Character.isDigit(cur.charAt(0))) {
 					if(pgn.size() > 0) pgn.add(curPgn);
 					curPgn = cur;
@@ -275,7 +296,7 @@ public class Game {
 		else format = args[0].toLowerCase();
 		
 		PrintStream outbox;
-		if(args.length == 2) {
+		if(args != null && args.length == 2) {
 			try {
 				outbox = new PrintStream(args[1]);
 			}
