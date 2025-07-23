@@ -204,6 +204,7 @@ public class Game {
 		board = new Board(String.join(" ", args));
 		dc = new MoveDecoder(board);
 		System.out.println("Board position loaded.");
+		board.updatePossibleMoves();
 		nextTurn();
 	}
 	

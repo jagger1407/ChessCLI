@@ -134,64 +134,60 @@ public class Board {
 	}
 	// TODO: Clean up a bit (see addRookMoves)
 	void addBishopMoves(ArrayList<Integer> list, int x, int y) {
+		Piece bishop = pieceOn(x, y);
 		// Up Left
-		for(int i=x-1;i>=0;i--) {
-			int nx = i;
-			int ny = y+x-i;
-			if(ny >= 8) break;
+		for(int ny=y+1;ny<8;ny++) {
+			int nx = x - (ny - y);
+			if(nx < 0) break;
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
-				if(p.getColor() != pieceOn(x, y).getColor()) {
+				if(p.getColor() == bishop.getColor()) break;
+				else {
 					list.add(pos(nx,ny));
+					break;
 				}
-				if(p.getType() == PieceType.King) continue;
-				else break;
 			}
 			list.add(pos(nx,ny));
 		}
 		// Up Right
-		for(int i=x+1;i<8;i++) {
-			int nx = i;
-			int ny = y+i-x;
-			if(ny >= 8) break;
+		for(int ny=y+1;ny<8;ny++) {
+			int nx = x + (ny - y);
+			if(nx >= 8) break;
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
-				if(p.getColor() != pieceOn(x, y).getColor()) {
+				if(p.getColor() == bishop.getColor()) break;
+				else {
 					list.add(pos(nx,ny));
+					break;
 				}
-				if(p.getType() == PieceType.King) continue;
-				else break;
 			}
 			list.add(pos(nx,ny));
-			
 		}
 		// Down Left
-		for(int i=x-1;i>=0;i--) {
-			int nx = i;
-			int ny = y-x+i;
-			if(ny < 0) break;
+		for(int ny=y-1;ny>=0;ny--) {
+			int nx = x - (y - ny);
+			if(nx < 0) break;
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
-				if(p.getColor() != pieceOn(x, y).getColor()) {
+				if(p.getColor() == bishop.getColor()) break;
+				else {
 					list.add(pos(nx,ny));
+					break;
 				}
-				if(p.getType() == PieceType.King) continue;
-				else break;
 			}
 			list.add(pos(nx,ny));
 		}
 		// Down Right
-		for(int i=x+1;i<8;i++) {
-			int nx = i;
-			int ny = y-i+x;
-			if(ny < 0) break;
+		for(int ny=y-1;ny>=0;ny--) {
+			int nx = x + (y - ny);
+			if(nx >= 8) break;
 			Piece p = pieceOn(nx, ny);
 			if(p != null) {
-				if(p.getColor() != pieceOn(x, y).getColor()) {
+				if(p.getColor() == bishop.getColor()) break;
+				else {
 					list.add(pos(nx,ny));
+					break;
 				}
-				if(p.getType() == PieceType.King) continue;
-				else break;
 			}
 			list.add(pos(nx,ny));
 		}
