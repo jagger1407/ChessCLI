@@ -35,7 +35,7 @@ public class Game {
 			System.out.println("A game is currently running. Resign if you want to start a new game.");
 			return;
 		}
-		if(args == null || args[0].equals("pvp")) {
+		if(args == null || args.length <= 0|| args[0].equals("pvp")) {
 			botMatch = false;
 		}
 		else if(args[0].equals("bot")) {
@@ -209,9 +209,12 @@ public class Game {
 	}
 	
 	void loadBoard() {
-		if(args == null || args.length < 1 || args[0].isEmpty()) return;
-		
-		String format = args[0].toLowerCase();
+		String format;
+		if(args == null || args.length < 1 || args[0].isEmpty()) {
+			return;
+		}
+		else if(args.length == 6) format = "fen";
+		else format = args[0].toLowerCase();
 		
 		Scanner fs;
 		if(args.length == 2) {
@@ -230,6 +233,9 @@ public class Game {
 				System.out.println("File couldn't be read.");
 				return;
 			}
+		}
+		else if(args.length == 6) {
+			System.out.println("No format specified. Taking FEN by default.");
 		}
 		else {
 			String[] newArgs = new String[args.length - 1];
