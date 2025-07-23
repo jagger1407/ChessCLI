@@ -66,26 +66,45 @@ public class MoveDecoder {
 			}
 		}
 		// Pawn move
-		if(input.length() == 2 && !b.validPos(input)) {
-			System.out.println("Not a legal Pawn move.");
-			return null;
-		}
-		int index = parseSquare(input);
-		if(index != -1) {
-			out[1] = input;
-			int x = input.charAt(0) - 'a';
-			int y = input.charAt(1) - '1';
-			for(int i=0;i<8;i++) {
-				Piece p = b.pieceOn(x, i);
-				if(p != null && p.getType() == PieceType.Pawn && p.getColor() == turn) {
-					if(p.possibleMoves.contains(index)) {
-						out[0] = String.format("%c%d", 'a' + x, i+1);
-						return out;
+		if(input.length() == 2 && b.validPos(input)) {
+			int index = parseSquare(input);
+			if(index != -1) {
+				out[1] = input;
+				int x = input.charAt(0) - 'a';
+				int y = input.charAt(1) - '1';
+				for(int i=0;i<8;i++) {
+					Piece p = b.pieceOn(x, i);
+					if(p != null && p.getType() == PieceType.Pawn && p.getColor() == turn) {
+						if(p.possibleMoves.contains(index)) {
+							out[0] = String.format("%c%d", 'a' + x, i+1);
+							return out;
+						}
 					}
 				}
+				System.out.println("No pawn reaches this square.");
+				return null;
 			}
-			System.out.println("No pawn reaches this square.");
-			return null;
+		}
+		else if(input.length() == 4 && input.contains("x")) {
+			int x = input.charAt(0) - 'a';
+			String destStr = input.substring(2);
+			if(x < 0 || x >= 8) {
+				System.out.printf("There is no '%c' file.\n", input.charAt(0));
+				return null;
+			}
+			if(!b.validPos(input.substring(2))) {
+				System.out.printf("%s is not a valid square.\n", destStr);
+				return null;
+			}
+			for(int y=0;y<8;y++) {
+				Piece p = b.pieceOn(x, y);
+				if(p == null || p.getColor() != turn || p.getType() != PieceType.Pawn) continue;
+				if(p.possibleMoves.contains(parseSquare(destStr))) {
+					out[0] = String.format("%c%d", input.charAt(0), y+1);
+					out[1] = destStr;
+					return out;
+				}
+			}
 		}
 		// Other moves
 		String pieces = "PBNRQK";
