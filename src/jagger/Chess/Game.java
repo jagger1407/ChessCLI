@@ -207,26 +207,56 @@ public class Game {
 	
 	void loadBoard() {
 		if(args == null || args.length < 1 || args[0].isEmpty()) return;
-		 
-		if(args.length != 6) {
-			System.out.println("This is not a valid FEN-notation.");
-			return;
+		
+		String format = args[0].toLowerCase();
+		
+		if(format.equals("fen")) {
+			if(args.length != 7) {
+				System.out.println("This is not a valid FEN-notation.");
+				return;
+			}
+			if(args[2].equals("w")) {
+				if(args[6].equals("1")) turnCounter = -1;
+				else turnCounter = (args[6].charAt(0) - '0') * 2 - 3;
+			}
+			else if(args[2].equals("b")) {
+				turnCounter = (args[6].charAt(0) - '0') * 2 - 2;
+			}
+			else {
+				System.out.println("(w)hite or (b)lack, those are the only 2 sides.");
+				return;
+			}
+			ingame = true;
+			board = new Board(String.join(" ", args));
+			dc = new MoveDecoder(board);
+			System.out.println("Board position loaded.");
 		}
-		if(args[1].equals("w")) {
-			if(args[5].equals("1")) turnCounter = -1;
-			else turnCounter = (args[5].charAt(0) - '0') * 2 - 3;
+		else if(format.equals("pgn")) {
+			String[] pgnlist = new String[args.length - 1];
+			for(int i=0;i<pgnlist.length;i++) {
+				pgnlist[i] = args[i + 1];
+			}
+			args = null;
+			start();
+			for(int i=0;i<pgnlist.length;i++) {
+				String cur = pgnlist[i];
+				if(Character.isDigit(cur.charAt(0))) {
+					if(pgn.size() > 0) pgn.add(curPgn);
+					curPgn = cur;
+					continue;
+				}
+				else {
+					curPgn += " " + cur;
+				}
+				String[] move = dc.decode(turn, cur);
+				board.movePiece(move[0], move[1]);
+				turnCounter++;
+				turn = Color.values()[(turnCounter+1) % Color.values().length];
+				if(cur.charAt(cur.length()-2) == '=') {
+					board.pieceOn(move[1]).promote((new Piece(cur.charAt(cur.length() - 1)).getType()));
+				}
+			}
 		}
-		else if(args[1].equals("b")) {
-			turnCounter = (args[5].charAt(0) - '0') * 2 - 2;
-		}
-		else {
-			System.out.println("(w)hite or (b)lack, those are the only 2 sides.");
-			return;
-		}
-		ingame = true;
-		board = new Board(String.join(" ", args));
-		dc = new MoveDecoder(board);
-		System.out.println("Board position loaded.");
 		board.updatePossibleMoves();
 		nextTurn();
 	}
@@ -238,7 +268,7 @@ public class Game {
 		}
 		String format;
 		if(args == null || args.length < 1 || args[0].isEmpty()) {
-			format = "fen";
+			format = "pgn";
 		}
 		else format = args[0].toLowerCase();
 		

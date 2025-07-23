@@ -35,11 +35,16 @@ Note: [arg] are required parameters, \<arg\> are optional
   - Moves a piece from the source square to the destination square.
   - It is preferred to use algebraic notation (example: Nc4).
 - **load**
-  - Syntax: load [FEN-position]
-  - Loads the board using a FEN-position as the input.
+  - Syntax: load [*fen*|pgn] [position]
+  - Loads the specified format.
+  - If `fen` is selected, the board is set up to match the position.
+  - If `pgn` is selected, the board plays through all the contained moves.
+  - Note: For PGN loads, each move must be separated with spaces, not newlines.
 - **export**
-  - Syntax: export
-  - Prints the current state of the board as a FEN-position.
+  - Syntax: export [fen|*pgn*]
+  - Prints the specified format to the console.
+  - If `fen` is selected, the current state of the board is printed.
+  - If `pgn` is selected, the game up to this point is printed.
 - **material**
   - Syntax: material
   - Prints the current material value for each side.

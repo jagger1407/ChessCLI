@@ -24,6 +24,15 @@ public class MoveDecoder {
 	}
 	public String[] decode(Color turn, String input) {
 		String[] out = new String[2];
+		
+		char promotion = 0;
+		if(input.endsWith("+") || input.endsWith("#")) {
+			input = input.substring(0, input.length() - 1);
+		}
+		else if(input.charAt(input.length()-2) == '=') {
+			input = input.substring(0, input.length() - 2);
+		}
+		
 		// Castling
 		if(input.equals("O-O") || input.equals("o-o")) {
 			int kingPos[] = { 60, 4 };
