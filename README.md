@@ -4,7 +4,15 @@ Play chess via the command-line!
 Note: This program was programmed in Java 21, so an installation of [java](https://www.oracle.com/java/technologies/downloads/#java21) is required.
 
 ### **Compiling**
-If you want to compile this program, open a terminal inside the project directory and type:
+If you have GNU Make, do this in the console:
+```
+git clone https://github.com/jagger1407/ChessCLI.git
+cd ChessCLI
+make
+```
+And a ChessCLI.jar file should appear in the directory.
+
+If GNU Make is not available, open a terminal inside the project directory and type:
 ```bash
 mkdir bin
 javac -d bin src/jagger/Chess/*.java src/jagger/Chess/bots/*.java
@@ -65,4 +73,3 @@ Note: [arg] are required parameters, \<arg\> are optional
 - Create more bots, and a selection of which one you want to play.
 - Add ability to add game variations (fog of war)
 - Rewrite the code to be better
-- Create runnable .jar or .exe or smth
